@@ -9,19 +9,17 @@ import lombok.NoArgsConstructor;
  * @author SETUP GAME
  **/
 @Entity
-@Table(name = "sous_service_fonctionnalites")
+@Table(name = "chiffres_cles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SousServiceFonctionnalites {
+public class ChiffresCles {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String contenu;
+    private String valeur;
 
-    @ManyToOne
-    @JoinColumn(name = "sous_service_id")
-    private SousServices sousService;
+    private String libelle;
 }
