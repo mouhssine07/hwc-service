@@ -10,5 +10,4 @@ import org.springframework.stereotype.Repository;
  * @date 14/04/2026
  */
 @Repository
-public interface ServicesRepository
-        extends JpaRepository<Services, Long> {}
+public interface ServicesRepository extends JpaRepository<Services, Long> {}
