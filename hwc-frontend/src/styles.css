@@ -1,0 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 98%;
+  --foreground: 185 30% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 185 30% 15%;
+  --primary: 175 40% 32%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 168 35% 45%;
+  --secondary-foreground: 0 0% 100%;
+  --accent: 165 45% 90%;
+  --accent-foreground: 175 40% 25%;
+  --muted: 165 20% 94%;
+  --muted-foreground: 185 15% 45%;
+  --border: 165 20% 88%;
+  --input: 165 20% 88%;
+  --ring: 168 35% 45%;
+  --radius: 0.75rem;
+  --gradient-primary: linear-gradient(135deg, hsl(175 40% 32%), hsl(168 35% 45%));
+  --gradient-accent: linear-gradient(135deg, hsl(168 35% 45%), hsl(165 45% 65%));
+  --gradient-hero: linear-gradient(180deg, hsl(165 20% 96%) 0%, hsl(0 0% 98%) 100%);
+  --shadow-glow: 0 0 60px hsl(168 35% 45% / 0.15);
+  --shadow-card: 0 4px 20px -4px hsl(185 25% 15% / 0.08);
+  --shadow-elevated: 0 20px 40px -12px hsl(185 25% 15% / 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Outfit, system-ui, sans-serif;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+@layer components {
+  .section-container {
+    @apply mx-auto w-full max-w-[1400px] px-4 md:px-6 lg:px-8;
+  }
+
+  .text-gradient {
+    background-image: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .glass {
+    @apply border border-border/50 bg-card/80 backdrop-blur-2xl;
+  }
+
+  .card-elevated {
+    @apply rounded-xl border border-border bg-card shadow-card;
+  }
+
+  .card-3d {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    @apply transition-all duration-500 ease-out;
+  }
+
+  .card-3d:hover {
+    transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .btn {
+    @apply inline-flex h-11 items-center justify-center rounded-lg px-6 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  .btn-hero {
+    @apply bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-lg hover:-translate-y-0.5 hover:shadow-elevated;
+  }
+
+  .btn-outline-hero {
+    @apply border border-primary/25 bg-card/80 text-primary backdrop-blur-xl hover:border-secondary hover:bg-accent/40;
+  }
+
+  .btn-cta {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-glow;
+  }
+}
