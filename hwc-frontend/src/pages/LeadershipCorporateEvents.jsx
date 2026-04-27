@@ -42,12 +42,14 @@ const whyBehaviours = [
 const accompagnements = [
   {
     title: "Accompagnement individuel",
-    description: "Transformation de votre posture managériale et impact professionnel durable",
+    description:
+      "Transformation de votre posture managériale et impact professionnel durable",
     icon: HeartHandshake,
   },
   {
     title: "Accompagnement des équipes",
-    description: "Cohésion collective et efficacité renforcée pour équipes performantes",
+    description:
+      "Cohésion collective et efficacité renforcée pour équipes performantes",
     icon: Users,
   },
   {
@@ -62,7 +64,8 @@ const accompagnements = [
   },
   {
     title: "Accompagnement des couples",
-    description: "Harmonie relationnelle et équilibre entre vie personnelle et professionnelle",
+    description:
+      "Harmonie relationnelle et équilibre entre vie personnelle et professionnelle",
     icon: HeartHandshake,
   },
 ];
@@ -72,7 +75,8 @@ const methodology = [
     step: 1,
     icon: Lightbulb,
     title: "Analyse comportementale individuelle",
-    description: "Compréhension claire du style, des forces et des zones de vigilance",
+    description:
+      "Compréhension claire du style, des forces et des zones de vigilance",
   },
   {
     step: 2,
@@ -84,13 +88,15 @@ const methodology = [
     step: 3,
     icon: Target,
     title: "Accompagnement stratégique ciblé",
-    description: "Objectifs personnalisés, leviers de progression, plans d'action",
+    description:
+      "Objectifs personnalisés, leviers de progression, plans d'action",
   },
   {
     step: 4,
     icon: Shield,
     title: "Suivi structuré",
-    description: "Ancrage des apprentissages et transformation durable des comportements",
+    description:
+      "Ancrage des apprentissages et transformation durable des comportements",
   },
 ];
 
@@ -130,30 +136,37 @@ export default function LeadershipCorporateEvents() {
 
 function Hero() {
   return (
-    <section className="relative flex min-h-[72vh] items-center overflow-hidden pb-16 pt-24">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-secondary/5" />
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-15"
-        style={{ backgroundImage: "url(https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600)" }}
-      />
+    <section className="relative flex min-h-[72vh] items-center overflow-hidden bg-muted/30 pb-16 pt-24">
       <div className="section-container relative z-10">
         <div className="mx-auto max-w-4xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2">
             <Sparkles className="h-4 w-4 text-secondary" />
-            <span className="text-sm font-medium text-secondary">Formation, Leadership & Organisation</span>
+            <span className="text-sm font-medium text-secondary">
+              Formation, Leadership & Organisation
+            </span>
           </div>
           <h1 className="mb-6 font-display text-4xl font-bold md:text-5xl lg:text-6xl">
-            Leadership et <span className="text-gradient">performance humaine</span>
+            Leadership et{" "}
+            <span className="text-gradient">performance humaine</span>
           </h1>
           <p className="mx-auto mb-8 max-w-3xl text-xl text-muted-foreground">
-            Libérez le potentiel humain pour des équipes performantes et des relations harmonieuses.
+            Libérez le potentiel humain pour des équipes performantes et des
+            relations harmonieuses.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a className="btn btn-hero h-14 px-8 text-base" href="https://calendly.com" target="_blank" rel="noreferrer">
+            <a
+              className="btn btn-hero h-14 px-8 text-base"
+              href="https://calendly.com"
+              target="_blank"
+              rel="noreferrer"
+            >
               Développer mon leadership
               <ArrowRight className="ml-2 h-5 w-5" />
             </a>
-            <a className="btn btn-outline-hero h-14 px-8 text-base" href="#accompagnements">
+            <a
+              className="btn btn-outline-hero h-14 px-8 text-base"
+              href="#accompagnements"
+            >
               Nos accompagnements
             </a>
           </div>
@@ -173,11 +186,13 @@ function Approach() {
           <div>
             <SectionHeading title="Notre approche" centered={false} />
             <p className="mb-6 text-muted-foreground">
-              Nous aidons nos clients à transformer la compréhension des comportements humains en leviers concrets de
-              leadership, de communication, de coopération et de performance collective.
+              Nous aidons nos clients à transformer la compréhension des
+              comportements humains en leviers concrets de leadership, de
+              communication, de coopération et de performance collective.
             </p>
             <p className="mb-6 text-muted-foreground">
-              À travers une démarche structurée et pragmatique, nous permettons à chacun de :
+              À travers une démarche structurée et pragmatique, nous permettons
+              à chacun de :
             </p>
             <ul className="space-y-3">
               {approachBullets.map((item) => (
@@ -203,8 +218,9 @@ function Approach() {
                   Pourquoi travailler sur les comportements humains ?
                 </h3>
                 <p className="mb-4 text-muted-foreground">
-                  Dans un monde en perpétuel mouvement, comprendre les comportements humains n'est plus une option :
-                  c'est un levier de réussite essentiel.
+                  Dans un monde en perpétuel mouvement, comprendre les
+                  comportements humains n'est plus une option : c'est un levier
+                  de réussite essentiel.
                 </p>
                 <ul className="space-y-3">
                   {whyBehaviours.map((item) => (
@@ -222,10 +238,13 @@ function Approach() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-secondary to-accent">
                 <Brain className="h-6 w-6 text-primary-foreground" />
               </div>
-              <h3 className="text-lg font-semibold">Référentiels internationaux</h3>
+              <h3 className="text-lg font-semibold">
+                Référentiels internationaux
+              </h3>
             </div>
             <p className="text-sm text-muted-foreground">
-              Outils comportementaux et psychométriques au service de votre transformation, jamais comme une finalité.
+              Outils comportementaux et psychométriques au service de votre
+              transformation, jamais comme une finalité.
             </p>
           </div>
         </div>
@@ -254,8 +273,12 @@ function Accompagnements() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-secondary to-accent">
                   <Icon className="h-6 w-6 text-primary-foreground" />
                 </div>
-                <h3 className="mb-2 text-xl font-semibold transition-colors group-hover:text-secondary">{item.title}</h3>
-                <p className="mb-4 text-sm text-muted-foreground">{item.description}</p>
+                <h3 className="mb-2 text-xl font-semibold transition-colors group-hover:text-secondary">
+                  {item.title}
+                </h3>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  {item.description}
+                </p>
                 <div className="flex items-center text-sm font-medium text-secondary">
                   En savoir plus
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-2" />
@@ -273,7 +296,10 @@ function Methodology() {
   return (
     <section className="bg-muted/30 py-16 md:py-24">
       <div className="section-container">
-        <SectionHeading title="Méthodologie" subtitle="Chaque accompagnement repose sur une démarche structurée et éprouvée" />
+        <SectionHeading
+          title="Méthodologie"
+          subtitle="Chaque accompagnement repose sur une démarche structurée et éprouvée"
+        />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {methodology.map((item) => {
             const Icon = item.icon;
@@ -285,8 +311,12 @@ function Methodology() {
                 <div className="mb-4 mt-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                   <Icon className="h-6 w-6 text-primary" />
                 </div>
-                <h4 className="mb-2 font-semibold text-foreground">{item.title}</h4>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
+                <h4 className="mb-2 font-semibold text-foreground">
+                  {item.title}
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  {item.description}
+                </p>
               </div>
             );
           })}
@@ -301,17 +331,24 @@ function Testimonials() {
   const testimonial = testimonials[active];
 
   const previous = () => {
-    setActive((current) => (current === 0 ? testimonials.length - 1 : current - 1));
+    setActive((current) =>
+      current === 0 ? testimonials.length - 1 : current - 1,
+    );
   };
 
   const next = () => {
-    setActive((current) => (current === testimonials.length - 1 ? 0 : current + 1));
+    setActive((current) =>
+      current === testimonials.length - 1 ? 0 : current + 1,
+    );
   };
 
   return (
     <section className="py-16 md:py-24">
       <div className="section-container">
-        <SectionHeading title="Témoignages" subtitle="Ce que nos clients disent de nos accompagnements" />
+        <SectionHeading
+          title="Témoignages"
+          subtitle="Ce que nos clients disent de nos accompagnements"
+        />
         <div className="relative mx-auto max-w-4xl rounded-3xl bg-card py-16">
           <button
             type="button"
@@ -324,8 +361,12 @@ function Testimonials() {
 
           <div className="mx-auto max-w-2xl px-12 text-center">
             <Quote className="mx-auto mb-6 h-12 w-12 text-secondary/30" />
-            <p className="mb-8 font-display text-xl font-medium text-foreground md:text-2xl">{testimonial.quote}</p>
-            <p className="font-semibold text-foreground">{testimonial.author}</p>
+            <p className="mb-8 font-display text-xl font-medium text-foreground md:text-2xl">
+              {testimonial.quote}
+            </p>
+            <p className="font-semibold text-foreground">
+              {testimonial.author}
+            </p>
             <p className="text-muted-foreground">{testimonial.role}</p>
           </div>
 
@@ -345,7 +386,9 @@ function Testimonials() {
                 type="button"
                 onClick={() => setActive(index)}
                 className={`h-3 rounded-full transition-all ${
-                  index === active ? "w-8 bg-secondary" : "w-3 bg-muted hover:bg-muted-foreground/30"
+                  index === active
+                    ? "w-8 bg-secondary"
+                    : "w-3 bg-muted hover:bg-muted-foreground/30"
                 }`}
                 aria-label={`Voir le témoignage ${index + 1}`}
                 aria-current={index === active}
@@ -364,13 +407,22 @@ function FinalCta() {
       <div className="section-container">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="mb-4 font-display text-3xl font-bold md:text-4xl">
-            Prêt à booster votre <span className="text-gradient">leadership</span> et votre performance humaine ?
+            Prêt à booster votre{" "}
+            <span className="text-gradient">leadership</span> et votre
+            performance humaine ?
           </h2>
-          <p className="mb-3 text-lg font-medium text-muted-foreground">L'humain au cœur de la performance</p>
+          <p className="mb-3 text-lg font-medium text-muted-foreground">
+            L'humain au cœur de la performance
+          </p>
           <p className="mb-8 text-muted-foreground">
             L'humain au cœur de la performance
           </p>
-          <a className="btn btn-hero h-14 px-8 text-base" href="https://calendly.com" target="_blank" rel="noreferrer">
+          <a
+            className="btn btn-hero h-14 px-8 text-base"
+            href="https://calendly.com"
+            target="_blank"
+            rel="noreferrer"
+          >
             Parlons-en
             <ArrowRight className="ml-2 h-5 w-5" />
           </a>
