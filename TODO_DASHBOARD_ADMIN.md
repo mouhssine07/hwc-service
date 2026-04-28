@@ -6,7 +6,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 1. Préparer Le Backend Sécurisé
+## 1. Préparer Le Backend Sécurisé - Terminé
 
 - [x] Ajouter `spring-boot-starter-security` dans `pom.xml`
 - [x] Ajouter `spring-boot-starter-validation` dans `pom.xml`
@@ -32,7 +32,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 2. Créer Les APIs Admin
+## 2. Créer Les APIs Admin - En attente validation manuelle
 
 - [x] Créer les endpoints admin `/api/admin/services`
 - [x] Créer les endpoints admin `/api/admin/sous-services`
@@ -57,7 +57,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 3. Créer Les APIs Publiques
+## 3. Créer Les APIs Publiques - Terminé
 
 - [x] Créer `GET /api/public/services`
 - [x] Créer `GET /api/public/services/{id}`
@@ -72,7 +72,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 4. Préparer Le Frontend Admin
+## 4. Préparer Le Frontend Admin - Terminé
 
 - [x] Installer `axios`
 - [x] Installer `react-hook-form`
@@ -93,7 +93,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 5. Authentification Frontend
+## 5. Authentification Frontend - Terminé
 
 - [x] Créer `src/api/axiosInstance.js`
 - [x] Ajouter l'intercepteur token JWT dans Axios
@@ -112,7 +112,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 6. Layout Dashboard
+## 6. Layout Dashboard - Terminé
 
 - [x] Créer `Sidebar.jsx`
 - [x] Créer `Topbar.jsx`
@@ -127,7 +127,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 7. UI Kit Admin
+## 7. UI Kit Admin - Prochaine phase
 
 - [ ] Créer `Button.jsx`
 - [ ] Créer `Input.jsx`
