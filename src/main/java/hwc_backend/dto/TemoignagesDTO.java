@@ -1,5 +1,6 @@
 package hwc_backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class TemoignagesDTO {
 
     private Long id;
+    @NotBlank
     private String nom;
     private String logoUrl;
     private String type;

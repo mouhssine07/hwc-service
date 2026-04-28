@@ -1,5 +1,7 @@
 package hwc_backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,9 +15,11 @@ import lombok.NoArgsConstructor;
 public class AccompagnementsDTO {
 
     private Long id;
+    @NotBlank
     private String titre;
     private String accroche;
     private String description1;
     private String description2;
+    @NotNull
     private Long sousServiceId;
 }

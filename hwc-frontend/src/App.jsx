@@ -1,4 +1,5 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Header from "./components/Header.jsx";
 import Hero from "./components/Hero.jsx";
 import Services from "./components/Services.jsx";
@@ -20,6 +21,11 @@ import SitesWebApplications from "./pages/SitesWebApplications.jsx";
 import SeoSea from "./pages/SeoSea.jsx";
 import IaAutomatisations from "./pages/IaAutomatisations.jsx";
 import PerformanceSousPression from "./pages/PerformanceSousPression.jsx";
+import LoginPage from "./pages/auth/LoginPage.jsx";
+import DashboardHome from "./pages/admin/DashboardHome.jsx";
+import AdminPlaceholder from "./pages/admin/AdminPlaceholder.jsx";
+import DashboardLayout from "./components/admin/layout/DashboardLayout.jsx";
+import ProtectedRoute from "./components/admin/layout/ProtectedRoute.jsx";
 
 function Home() {
   return (
@@ -34,9 +40,12 @@ function Home() {
 }
 
 export default function App() {
+  const location = useLocation();
+  const isStandaloneRoute = location.pathname.startsWith("/admin") || location.pathname === "/login";
+
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      {!isStandaloneRoute ? <Header /> : null}
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -58,11 +67,19 @@ export default function App() {
           <Route path="/offres/performance-sous-pression" element={<PerformanceSousPression />} />
           <Route path="/hwc-method" element={<HwcMethod />} />
           <Route path="/methode-hwc-360" element={<HwcMethod />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route index element={<DashboardHome />} />
+              <Route path="*" element={<AdminPlaceholder />} />
+            </Route>
+          </Route>
           <Route path="*" element={<Home />} />
         </Routes>
       </main>
-      <Footer />
-      <FloatingContact />
+      {!isStandaloneRoute ? <Footer /> : null}
+      {!isStandaloneRoute ? <FloatingContact /> : null}
+      <Toaster position="top-right" />
     </div>
   );
 }

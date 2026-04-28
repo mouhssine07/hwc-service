@@ -8,122 +8,122 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ## 1. Préparer Le Backend Sécurisé
 
-- [ ] Ajouter `spring-boot-starter-security` dans `pom.xml`
-- [ ] Ajouter `spring-boot-starter-validation` dans `pom.xml`
-- [ ] Ajouter les dépendances JWT `jjwt-api`, `jjwt-impl`, `jjwt-jackson`
-- [ ] Créer l'entité `User`
-- [ ] Créer l'entité `Role`
-- [ ] Créer la relation `user_roles`
-- [ ] Créer `UserRepository`
-- [ ] Créer `RoleRepository`
-- [ ] Créer les DTOs `LoginRequestDTO`, `RegisterRequestDTO`, `AuthResponseDTO`, `UserDTO`
-- [ ] Créer `CustomUserDetailsService`
-- [ ] Créer `JwtUtil`
-- [ ] Créer `JwtAuthenticationFilter`
-- [ ] Créer `SecurityConfig`
-- [ ] Configurer CORS pour le frontend Vite
-- [ ] Configurer BCrypt
-- [ ] Ajouter `jwt.secret` et `jwt.expiration` dans `application.properties`
-- [ ] Créer `AuthController`
-- [ ] Créer `DataInitializer` avec admin par défaut
-- [ ] Tester `POST /api/auth/login`
-- [ ] Tester qu'une route `/api/admin/**` sans token retourne `401`
-- [ ] Tester qu'une route `/api/admin/**` avec token fonctionne
+- [x] Ajouter `spring-boot-starter-security` dans `pom.xml`
+- [x] Ajouter `spring-boot-starter-validation` dans `pom.xml`
+- [x] Ajouter les dépendances JWT `jjwt-api`, `jjwt-impl`, `jjwt-jackson`
+- [x] Créer l'entité `User`
+- [x] Créer l'entité `Role`
+- [x] Créer la relation `user_roles`
+- [x] Créer `UserRepository`
+- [x] Créer `RoleRepository`
+- [x] Créer les DTOs `LoginRequestDTO`, `RegisterRequestDTO`, `AuthResponseDTO`, `UserDTO`
+- [x] Créer `CustomUserDetailsService`
+- [x] Créer `JwtUtil`
+- [x] Créer `JwtAuthenticationFilter`
+- [x] Créer `SecurityConfig`
+- [x] Configurer CORS pour le frontend Vite
+- [x] Configurer BCrypt
+- [x] Ajouter `jwt.secret` et `jwt.expiration` dans `application.properties`
+- [x] Créer `AuthController`
+- [x] Créer `DataInitializer` avec admin par défaut
+- [x] Tester `POST /api/auth/login`
+- [x] Tester qu'une route `/api/admin/**` sans token retourne `401`
+- [x] Tester qu'une route `/api/admin/**` avec token fonctionne
 
 ---
 
 ## 2. Créer Les APIs Admin
 
-- [ ] Créer les endpoints admin `/api/admin/services`
-- [ ] Créer les endpoints admin `/api/admin/sous-services`
-- [ ] Créer les endpoints admin `/api/admin/etiquettes`
-- [ ] Créer les endpoints admin `/api/admin/temoignages`
-- [ ] Créer les endpoints admin `/api/admin/certifications`
-- [ ] Créer les endpoints admin `/api/admin/pays`
-- [ ] Créer les endpoints admin `/api/admin/chiffres-cles`
-- [ ] Créer les endpoints admin `/api/admin/clients-confiance`
-- [ ] Créer les endpoints admin `/api/admin/demandes-contact`
-- [ ] Créer les endpoints admin `/api/admin/service-fonctionnalites`
-- [ ] Créer les endpoints admin `/api/admin/service-images`
-- [ ] Créer les endpoints admin `/api/admin/sous-service-fonctionnalites`
-- [ ] Créer les endpoints admin `/api/admin/sous-service-avantages`
-- [ ] Créer les endpoints admin `/api/admin/sous-service-etapes`
-- [ ] Créer les endpoints admin `/api/admin/sous-service-faqs`
-- [ ] Créer les endpoints admin `/api/admin/accompagnements`
-- [ ] Ajouter pagination avec `Pageable` sur les listes
-- [ ] Ajouter validation `@Valid` sur les créations/modifications
-- [ ] Ajouter une gestion globale d'erreurs avec `@ControllerAdvice`
+- [x] Créer les endpoints admin `/api/admin/services`
+- [x] Créer les endpoints admin `/api/admin/sous-services`
+- [x] Créer les endpoints admin `/api/admin/etiquettes`
+- [x] Créer les endpoints admin `/api/admin/temoignages`
+- [x] Créer les endpoints admin `/api/admin/certifications`
+- [x] Créer les endpoints admin `/api/admin/pays`
+- [x] Créer les endpoints admin `/api/admin/chiffres-cles`
+- [x] Créer les endpoints admin `/api/admin/clients-confiance`
+- [x] Créer les endpoints admin `/api/admin/demandes-contact`
+- [x] Créer les endpoints admin `/api/admin/service-fonctionnalites`
+- [x] Créer les endpoints admin `/api/admin/service-images`
+- [x] Créer les endpoints admin `/api/admin/sous-service-fonctionnalites`
+- [x] Créer les endpoints admin `/api/admin/sous-service-avantages`
+- [x] Créer les endpoints admin `/api/admin/sous-service-etapes`
+- [x] Créer les endpoints admin `/api/admin/sous-service-faqs`
+- [x] Créer les endpoints admin `/api/admin/accompagnements`
+- [x] Ajouter pagination avec `Pageable` sur les listes
+- [x] Ajouter validation `@Valid` sur les créations/modifications
+- [x] Ajouter une gestion globale d'erreurs avec `@ControllerAdvice`
 - [ ] Tester chaque CRUD avec Postman ou Thunder Client
 
 ---
 
 ## 3. Créer Les APIs Publiques
 
-- [ ] Créer `GET /api/public/services`
-- [ ] Créer `GET /api/public/services/{id}`
-- [ ] Créer `GET /api/public/sous-services/{id}`
-- [ ] Créer `GET /api/public/temoignages`
-- [ ] Créer `GET /api/public/certifications`
-- [ ] Créer `GET /api/public/pays`
-- [ ] Créer `GET /api/public/chiffres-cles`
-- [ ] Créer `GET /api/public/clients-confiance`
-- [ ] Créer `POST /api/public/demandes-contact`
-- [ ] Vérifier que toutes les routes publiques fonctionnent sans token
+- [x] Créer `GET /api/public/services`
+- [x] Créer `GET /api/public/services/{id}`
+- [x] Créer `GET /api/public/sous-services/{id}`
+- [x] Créer `GET /api/public/temoignages`
+- [x] Créer `GET /api/public/certifications`
+- [x] Créer `GET /api/public/pays`
+- [x] Créer `GET /api/public/chiffres-cles`
+- [x] Créer `GET /api/public/clients-confiance`
+- [x] Créer `POST /api/public/demandes-contact`
+- [x] Vérifier que toutes les routes publiques fonctionnent sans token
 
 ---
 
 ## 4. Préparer Le Frontend Admin
 
-- [ ] Installer `axios`
-- [ ] Installer `react-hook-form`
-- [ ] Installer `zod`
-- [ ] Installer `@hookform/resolvers`
-- [ ] Installer `react-hot-toast`
-- [ ] Installer `zustand`
-- [ ] Créer `hwc-frontend/.env`
-- [ ] Ajouter `VITE_API_BASE_URL=http://localhost:8080/api`
-- [ ] Créer `src/api/`
-- [ ] Créer `src/store/`
-- [ ] Créer `src/utils/`
-- [ ] Créer `src/components/ui/`
-- [ ] Créer `src/components/admin/layout/`
-- [ ] Créer `src/components/admin/forms/`
-- [ ] Créer `src/pages/auth/`
-- [ ] Créer `src/pages/admin/`
+- [x] Installer `axios`
+- [x] Installer `react-hook-form`
+- [x] Installer `zod`
+- [x] Installer `@hookform/resolvers`
+- [x] Installer `react-hot-toast`
+- [x] Installer `zustand`
+- [x] Créer `hwc-frontend/.env`
+- [x] Ajouter `VITE_API_BASE_URL=http://localhost:8080/api`
+- [x] Créer `src/api/`
+- [x] Créer `src/store/`
+- [x] Créer `src/utils/`
+- [x] Créer `src/components/ui/`
+- [x] Créer `src/components/admin/layout/`
+- [x] Créer `src/components/admin/forms/`
+- [x] Créer `src/pages/auth/`
+- [x] Créer `src/pages/admin/`
 
 ---
 
 ## 5. Authentification Frontend
 
-- [ ] Créer `src/api/axiosInstance.js`
-- [ ] Ajouter l'intercepteur token JWT dans Axios
-- [ ] Ajouter la redirection automatique vers `/login` en cas de `401`
-- [ ] Créer `src/api/authApi.js`
-- [ ] Créer `src/store/authStore.js`
-- [ ] Persister le token dans `localStorage`
-- [ ] Créer `LoginPage.jsx`
-- [ ] Ajouter validation Zod du formulaire login
-- [ ] Afficher les erreurs avec toast
-- [ ] Créer `ProtectedRoute.jsx`
-- [ ] Ajouter la route `/login`
-- [ ] Ajouter les routes protégées `/admin/*`
-- [ ] Tester login depuis le frontend
-- [ ] Tester logout depuis le frontend
+- [x] Créer `src/api/axiosInstance.js`
+- [x] Ajouter l'intercepteur token JWT dans Axios
+- [x] Ajouter la redirection automatique vers `/login` en cas de `401`
+- [x] Créer `src/api/authApi.js`
+- [x] Créer `src/store/authStore.js`
+- [x] Persister le token dans `localStorage`
+- [x] Créer `LoginPage.jsx`
+- [x] Ajouter validation Zod du formulaire login
+- [x] Afficher les erreurs avec toast
+- [x] Créer `ProtectedRoute.jsx`
+- [x] Ajouter la route `/login`
+- [x] Ajouter les routes protégées `/admin/*`
+- [x] Tester login depuis le frontend
+- [x] Tester logout depuis le frontend
 
 ---
 
 ## 6. Layout Dashboard
 
-- [ ] Créer `Sidebar.jsx`
-- [ ] Créer `Topbar.jsx`
-- [ ] Créer `DashboardLayout.jsx`
-- [ ] Créer `DashboardHome.jsx`
-- [ ] Ajouter navigation admin avec `NavLink`
-- [ ] Ajouter état actif dans la sidebar
-- [ ] Ajouter déconnexion dans le layout
-- [ ] Rendre la sidebar responsive mobile
-- [ ] Créer endpoint `GET /api/admin/dashboard/stats`
-- [ ] Afficher les stats dans `DashboardHome`
+- [x] Créer `Sidebar.jsx`
+- [x] Créer `Topbar.jsx`
+- [x] Créer `DashboardLayout.jsx`
+- [x] Créer `DashboardHome.jsx`
+- [x] Ajouter navigation admin avec `NavLink`
+- [x] Ajouter état actif dans la sidebar
+- [x] Ajouter déconnexion dans le layout
+- [x] Rendre la sidebar responsive mobile
+- [x] Créer endpoint `GET /api/admin/dashboard/stats`
+- [x] Afficher les stats dans `DashboardHome`
 
 ---
 
@@ -225,4 +225,5 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ## Prochaine Tâche À Faire Maintenant
 
-- [ ] Commencer Phase 1 : ajouter Spring Security + JWT dans le backend
+- [x] Commencer Phase 1 : ajouter Spring Security + JWT dans le backend
+- [ ] Commencer Phase 7 : créer le UI Kit Admin
