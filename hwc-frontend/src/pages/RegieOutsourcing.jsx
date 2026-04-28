@@ -206,6 +206,14 @@ export default function RegieOutsourcing() {
 function Hero() {
   return (
     <section className="relative flex min-h-[72vh] items-center overflow-hidden bg-muted/30 pb-16 pt-24">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-secondary/5" />
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20"
+        style={{
+          backgroundImage:
+            "url(https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1600)",
+        }}
+      />
       <div className="section-container relative z-10">
         <div className="mx-auto max-w-4xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2">

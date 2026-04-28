@@ -29,7 +29,7 @@ const offers = [
     subtitle: "Forger des leaders résilients",
     description:
       "Programmes expérientiels par le Krav Maga pour renforcer la prise de décision en situation de stress, la cohésion d'équipe et la gestion constructive des tensions.",
-    href: "/offres/leadership-corporate-events",
+    href: "/offres/performance-sous-pression",
     color: "from-primary to-accent",
     features: ["Leadership sous stress", "Team building & Cohésion", "Gestion des conflits", "Communication assertive"],
   },
@@ -133,7 +133,7 @@ export default function Services() {
                 );
               })}
 
-              <Link className="btn btn-hero h-12 rounded-xl px-7 text-base shadow-elevated" to="/hwc-method">
+              <Link className="btn btn-hero h-12 rounded-xl px-7 text-base shadow-elevated" to="/methode-hwc-360">
                 Découvrir la méthode HWC 360°
                 <ArrowRight className="ml-3 h-5 w-5" />
               </Link>

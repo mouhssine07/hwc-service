@@ -13,6 +13,11 @@ const offers = [
     description: "Formation, leadership et organisation",
     href: "/offres/leadership-corporate-events",
   },
+  {
+    name: "Performance sous pression",
+    description: "Leadership sous stress et cohésion",
+    href: "/offres/performance-sous-pression",
+  },
 ];
 
 function Logo({ inverted = false }) {

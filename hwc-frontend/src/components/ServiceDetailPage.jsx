@@ -102,7 +102,7 @@ export default function ServiceDetailPage({
           <div className="mx-auto max-w-2xl">
             <h2 className="font-display text-3xl font-bold md:text-4xl">{finalTitle}</h2>
             <p className="mt-4 text-lg text-muted-foreground">{finalSubtitle}</p>
-            <a href="https://calendly.com" target="_blank" rel="noopener noreferrer" className="btn-hero mt-8 inline-flex items-center gap-2">
+            <a href="https://calendly.com" target="_blank" rel="noopener noreferrer" className="btn btn-hero mt-8 h-14 px-8 text-base">
               {finalCta}
               <ArrowRight className="h-5 w-5" />
             </a>

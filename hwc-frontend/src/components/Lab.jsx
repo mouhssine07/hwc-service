@@ -393,7 +393,7 @@ function LabPage() {
             </p>
             <a
               href="#newsletter"
-              className="btn-hero mt-8 inline-flex items-center gap-2"
+              className="btn btn-hero h-14 px-8 text-base mt-3"
             >
               S'abonner à la newsletter
               <ArrowRight className="h-5 w-5" />
