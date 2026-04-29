@@ -120,7 +120,8 @@ class AuthSecurityIntegrationTests {
             "/api/public/certifications",
             "/api/public/pays",
             "/api/public/chiffres-cles",
-            "/api/public/clients-confiance"
+            "/api/public/clients-confiance",
+            "/api/public/service-images"
     })
     void publicGetEndpointsDoNotRequireToken(String endpoint) throws Exception {
         mockMvc.perform(get(endpoint))

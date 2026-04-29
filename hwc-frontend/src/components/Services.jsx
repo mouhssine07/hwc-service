@@ -1,5 +1,7 @@
 import { ArrowRight, BarChart3, Brain, Layers, Megaphone, Shield, Target, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getPublicServiceImages, getPublicServices } from "../api/publicContentApi.js";
 import SectionHeading from "./SectionHeading.jsx";
 
 const offers = [
@@ -59,6 +61,50 @@ const methodSteps = [
 ];
 
 export default function Services() {
+  const [serviceOffers, setServiceOffers] = useState(offers);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadServices() {
+      try {
+        const [services, images] = await Promise.all([getPublicServices(), getPublicServiceImages()]);
+        if (!ignore && Array.isArray(services) && services.length > 0) {
+          setServiceOffers(
+            services.map((service, index) => {
+              const fallback = offers[index % offers.length];
+              const image = Array.isArray(images)
+                ? images.find((item) => item.serviceId === service.id)?.imageUrl
+                : null;
+              return {
+                ...fallback,
+                id: service.id,
+                title: service.titre,
+                subtitle: service.accroche || fallback.subtitle,
+                description: service.description,
+                href: `/offres/services/${service.id}`,
+                imageUrl: image,
+                features: service.etiquettes?.length
+                  ? service.etiquettes.map((etiquette) => etiquette.nom)
+                  : fallback.features,
+              };
+            }),
+          );
+        }
+      } catch {
+        if (!ignore) {
+          setServiceOffers(offers);
+        }
+      }
+    }
+
+    loadServices();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <section id="services" className="py-16 md:py-24">
       <div className="section-container">
@@ -67,7 +113,7 @@ export default function Services() {
           subtitle="Une approche 360° qui aligne stratégie de croissance, excellence managériale et performance humaine pour des résultats durables et mesurables."
         />
         <div className="grid gap-8 lg:grid-cols-3">
-          {offers.map((offer) => {
+          {serviceOffers.map((offer) => {
             const Icon = offer.icon;
             return (
               <Link
@@ -80,6 +126,13 @@ export default function Services() {
                 >
                   <Icon className="h-8 w-8 text-primary-foreground" />
                 </div>
+                {offer.imageUrl ? (
+                  <img
+                    alt=""
+                    className="mb-6 aspect-video w-full rounded-lg object-cover"
+                    src={offer.imageUrl}
+                  />
+                ) : null}
                 <p className="mb-2 text-xs font-medium uppercase tracking-wider text-secondary">{offer.subtitle}</p>
                 <h3 className="mb-4 font-display text-2xl font-bold transition-colors group-hover:text-secondary">
                   {offer.title}

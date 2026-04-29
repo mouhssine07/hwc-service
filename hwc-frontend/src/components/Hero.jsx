@@ -1,6 +1,38 @@
 import { ArrowRight, Calendar, Mouse } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getPublicClientsConfiance } from "../api/publicContentApi.js";
+
+const fallbackClients = [
+  { id: "jcc", nom: "JCC" },
+  { id: "interflon", nom: "Interflon" },
+];
 
 export default function Hero() {
+  const [clients, setClients] = useState(fallbackClients);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadClients() {
+      try {
+        const data = await getPublicClientsConfiance();
+        if (!ignore && Array.isArray(data) && data.length > 0) {
+          setClients(data);
+        }
+      } catch {
+        if (!ignore) {
+          setClients(fallbackClients);
+        }
+      }
+    }
+
+    loadClients();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   const scrollToServices = () => {
     document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -43,10 +75,18 @@ export default function Hero() {
           <div className="mt-16 animate-fade-in [animation-delay:0.8s]">
             <p className="mb-4 text-sm text-muted-foreground">Ils nous font confiance</p>
             <div className="flex flex-wrap items-center justify-center gap-6 opacity-60 md:gap-8">
-              {["JCC", "Interflon"].map((name) => (
-                <span className="text-lg font-semibold" key={name}>
-                  {name}
-                </span>
+              {clients.map((client) => (
+                <div className="flex h-12 min-w-24 items-center justify-center" key={client.id ?? client.nom}>
+                  {client.logoUrl ? (
+                    <img
+                      alt={client.nom}
+                      className="max-h-10 max-w-32 object-contain grayscale transition-all hover:grayscale-0"
+                      src={client.logoUrl}
+                    />
+                  ) : (
+                    <span className="text-lg font-semibold">{client.nom}</span>
+                  )}
+                </div>
               ))}
             </div>
           </div>

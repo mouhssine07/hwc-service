@@ -10,6 +10,9 @@ import {
   Table,
   UserRound,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { createPublicDemandeContact, getPublicPays } from "../api/publicContentApi.js";
 import SectionHeading from "./SectionHeading.jsx";
 
 const resources = [
@@ -96,13 +99,38 @@ const categoryStyles = {
 };
 
 const locations = [
-  ["Maroc", "Casablanca", "MA"],
-  ["France", "Paris", "FR"],
-  ["Luxembourg", "Luxembourg", "LU"],
-  ["Îles Maurice", "Port-Louis", "MU"],
+  { id: "ma", nom: "Maroc", ville: "Casablanca", codePays: "MA" },
+  { id: "fr", nom: "France", ville: "Paris", codePays: "FR" },
+  { id: "lu", nom: "Luxembourg", ville: "Luxembourg", codePays: "LU" },
+  { id: "mu", nom: "Îles Maurice", ville: "Port-Louis", codePays: "MU" },
 ];
 
 export default function Tools({ page = false }) {
+  const [pays, setPays] = useState(locations);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadPays() {
+      try {
+        const data = await getPublicPays();
+        if (!ignore && Array.isArray(data) && data.length > 0) {
+          setPays(data);
+        }
+      } catch {
+        if (!ignore) {
+          setPays(locations);
+        }
+      }
+    }
+
+    loadPays();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   if (page) return <ToolsPage />;
 
   return (
@@ -143,11 +171,13 @@ export default function Tools({ page = false }) {
             ))}
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {locations.map(([country, city, code]) => (
-              <div className="card-elevated group p-6 text-center transition-all hover:border-secondary/50" key={country}>
-                <span className="mb-4 block text-2xl font-bold text-secondary transition-transform group-hover:scale-110">{code}</span>
-                <h4 className="font-semibold text-foreground">{city}</h4>
-                <p className="text-sm text-muted-foreground">{country}</p>
+            {pays.map((item) => (
+              <div className="card-elevated group p-6 text-center transition-all hover:border-secondary/50" key={item.id ?? item.nom}>
+                <span className="mb-4 block text-2xl font-bold text-secondary transition-transform group-hover:scale-110">
+                  {item.codePays}
+                </span>
+                <h4 className="font-semibold text-foreground">{item.ville}</h4>
+                <p className="text-sm text-muted-foreground">{item.nom}</p>
               </div>
             ))}
           </div>
@@ -235,6 +265,28 @@ function ToolsPage() {
 }
 
 function CTA() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (!email.trim()) {
+      toast.error("Veuillez saisir votre email.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await createPublicDemandeContact(email.trim());
+      setEmail("");
+      toast.success("Votre demande a bien été envoyée.");
+    } catch {
+      toast.error("Impossible d'envoyer la demande pour le moment.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="mx-auto mt-20 max-w-2xl rounded-3xl bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/30 p-8 text-center md:p-12">
       <h2 className="mb-4 font-display text-3xl font-bold md:text-4xl">
@@ -243,14 +295,16 @@ function CTA() {
       <p className="mb-8 text-muted-foreground">
         Un premier échange pour comprendre vos enjeux et construire une approche sur-mesure.
       </p>
-      <form className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
+      <form className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row" onSubmit={handleSubmit}>
         <input
           className="h-12 flex-1 rounded-lg border border-border bg-card px-4 outline-none transition-colors focus:border-secondary"
+          onChange={(event) => setEmail(event.target.value)}
           placeholder="Votre adresse email"
           type="email"
+          value={email}
         />
-        <button className="btn btn-hero h-12" type="button">
-          Envoyer
+        <button className="btn btn-hero h-12" disabled={loading} type="submit">
+          {loading ? "Envoi..." : "Envoyer"}
           <ArrowRight className="ml-2 h-5 w-5" />
         </button>
       </form>

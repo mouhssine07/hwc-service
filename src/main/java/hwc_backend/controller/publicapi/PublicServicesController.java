@@ -1,7 +1,9 @@
 package hwc_backend.controller.publicapi;
 
 import hwc_backend.dto.ServicesDTO;
+import hwc_backend.dto.ServiceImagesDTO;
 import hwc_backend.dto.SousServicesDTO;
+import hwc_backend.service.ServiceImagesService;
 import hwc_backend.service.ServicesService;
 import hwc_backend.service.SousServicesService;
 import java.util.List;
@@ -19,6 +21,7 @@ public class PublicServicesController {
 
     private final ServicesService servicesService;
     private final SousServicesService sousServicesService;
+    private final ServiceImagesService serviceImagesService;
 
     @GetMapping("/services")
     public ResponseEntity<List<ServicesDTO>> getServices() {
@@ -33,5 +36,15 @@ public class PublicServicesController {
     @GetMapping("/sous-services/{id}")
     public ResponseEntity<SousServicesDTO> getSousServiceById(@PathVariable Long id) {
         return ResponseEntity.ok(sousServicesService.getById(id));
+    }
+
+    @GetMapping("/service-images")
+    public ResponseEntity<List<ServiceImagesDTO>> getServiceImages() {
+        return ResponseEntity.ok(serviceImagesService.getAll());
+    }
+
+    @GetMapping("/service-images/by-service/{serviceId}")
+    public ResponseEntity<List<ServiceImagesDTO>> getServiceImagesByServiceId(@PathVariable Long serviceId) {
+        return ResponseEntity.ok(serviceImagesService.getByServiceId(serviceId));
     }
 }

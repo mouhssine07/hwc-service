@@ -21,6 +21,7 @@ import SitesWebApplications from "./pages/SitesWebApplications.jsx";
 import SeoSea from "./pages/SeoSea.jsx";
 import IaAutomatisations from "./pages/IaAutomatisations.jsx";
 import PerformanceSousPression from "./pages/PerformanceSousPression.jsx";
+import PublicServicePage, { PublicSousServicePage } from "./pages/PublicServicePage.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
 import DashboardHome from "./pages/admin/DashboardHome.jsx";
 import AdminPlaceholder from "./pages/admin/AdminPlaceholder.jsx";
@@ -81,6 +82,8 @@ export default function App() {
           <Route path="/offres/regie-outsourcing/support-client" element={<SupportAdministratif />} />
           <Route path="/offres/leadership-corporate-events" element={<LeadershipCorporateEvents />} />
           <Route path="/offres/performance-sous-pression" element={<PerformanceSousPression />} />
+          <Route path="/offres/services/:serviceId" element={<PublicServicePage />} />
+          <Route path="/offres/sous-services/:sousServiceId" element={<PublicSousServicePage />} />
           <Route path="/hwc-method" element={<HwcMethod />} />
           <Route path="/methode-hwc-360" element={<HwcMethod />} />
           <Route path="/login" element={<LoginPage />} />

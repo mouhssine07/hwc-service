@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -18,6 +18,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import SectionHeading from "./SectionHeading.jsx";
+import { getPublicCertifications, getPublicTemoignages } from "../api/publicContentApi.js";
 
 const certifications = [
   ["HubSpot", "●"],
@@ -220,6 +221,32 @@ export default function Lab({ page = false, article = false }) {
 }
 
 function HomeLab() {
+  const fallbackCertifications = certifications.map(([nom, logo]) => ({ id: nom, nom, logo }));
+  const [certificationItems, setCertificationItems] = useState(fallbackCertifications);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadCertifications() {
+      try {
+        const data = await getPublicCertifications();
+        if (!ignore && Array.isArray(data) && data.length > 0) {
+          setCertificationItems(data);
+        }
+      } catch {
+        if (!ignore) {
+          setCertificationItems(fallbackCertifications);
+        }
+      }
+    }
+
+    loadCertifications();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <section className="py-16 md:py-24">
       <div className="section-container">
@@ -229,16 +256,20 @@ function HomeLab() {
         />
 
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
-          {certifications.map(([name, logo]) => (
+          {certificationItems.map((item) => (
             <div
               className="group card-elevated flex cursor-default flex-col items-center gap-3 rounded-2xl p-6 transition-all hover:border-secondary/50"
-              key={name}
+              key={item.id ?? item.nom}
             >
-              <div className="text-4xl text-secondary transition-transform group-hover:scale-110">
-                {logo}
+              <div className="flex h-12 w-24 items-center justify-center text-4xl text-secondary transition-transform group-hover:scale-110">
+                {item.logoUrl ? (
+                  <img alt={item.nom} className="max-h-12 max-w-24 object-contain" src={item.logoUrl} />
+                ) : (
+                  item.logo ?? "●"
+                )}
               </div>
               <span className="text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground">
-                {name}
+                {item.nom}
               </span>
             </div>
           ))}
@@ -627,18 +658,50 @@ function FilterGroup({
 }
 
 function Testimonials() {
+  const [items, setItems] = useState(testimonials);
   const [active, setActive] = useState(0);
-  const testimonial = testimonials[active];
+  const testimonial = items[active] ?? testimonials[0];
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadTemoignages() {
+      try {
+        const data = await getPublicTemoignages();
+        if (!ignore && Array.isArray(data) && data.length > 0) {
+          setItems(
+            data.map((item) => ({
+              quote: item.type || "Ils nous font confiance pour les accompagner dans leurs enjeux de croissance.",
+              author: item.nom,
+              role: "Client HWC",
+              company: item.type || "Reference",
+            })),
+          );
+          setActive(0);
+        }
+      } catch {
+        if (!ignore) {
+          setItems(testimonials);
+        }
+      }
+    }
+
+    loadTemoignages();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const previous = () => {
     setActive((current) =>
-      current === 0 ? testimonials.length - 1 : current - 1,
+      current === 0 ? items.length - 1 : current - 1,
     );
   };
 
   const next = () => {
     setActive((current) =>
-      current === testimonials.length - 1 ? 0 : current + 1,
+      current === items.length - 1 ? 0 : current + 1,
     );
   };
 
@@ -679,7 +742,7 @@ function Testimonials() {
         </button>
 
         <div className="mt-8 flex items-center justify-center gap-3">
-          {testimonials.map((item, index) => (
+          {items.map((item, index) => (
             <button
               type="button"
               onClick={() => setActive(index)}

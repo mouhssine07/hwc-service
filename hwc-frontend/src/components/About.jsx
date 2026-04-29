@@ -11,6 +11,8 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getPublicChiffresCles } from "../api/publicContentApi.js";
 import SectionHeading from "./SectionHeading.jsx";
 
 const values = [
@@ -27,11 +29,42 @@ const team = [
   ["Expert SEO", "Référencement naturel", "Certifié Google et Semrush, plus de 100 projets SEO réalisés."],
 ];
 
+const fallbackChiffresCles = [
+  { id: "expertise", valeur: "20+", libelle: "Ans d'expertise" },
+  { id: "recommandation", valeur: "98%", libelle: "Dirigeants recommandent HWC" },
+  { id: "pays", valeur: "4", libelle: "Pays d'intervention" },
+];
+
 export default function About({ page = false }) {
   return page ? <AboutPage /> : <HomeAbout />;
 }
 
 function HomeAbout() {
+  const [chiffresCles, setChiffresCles] = useState(fallbackChiffresCles);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadChiffresCles() {
+      try {
+        const data = await getPublicChiffresCles();
+        if (!ignore && Array.isArray(data) && data.length > 0) {
+          setChiffresCles(data);
+        }
+      } catch {
+        if (!ignore) {
+          setChiffresCles(fallbackChiffresCles);
+        }
+      }
+    }
+
+    loadChiffresCles();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <section id="a-propos" className="bg-card py-16 md:py-24">
       <div className="section-container">
@@ -68,14 +101,10 @@ function HomeAbout() {
                 mesurables.
               </p>
               <div className="grid grid-cols-3 gap-6 pt-6">
-                {[
-                  ["20+", "Ans d'expertise"],
-                  ["98%", "Dirigeants recommandent HWC"],
-                  ["4", "Pays d'intervention"],
-                ].map(([value, label]) => (
-                  <div className="text-center" key={label}>
-                    <p className="font-display text-3xl font-bold text-gradient">{value}</p>
-                    <p className="text-sm text-muted-foreground">{label}</p>
+                {chiffresCles.slice(0, 3).map((item) => (
+                  <div className="text-center" key={item.id ?? item.libelle}>
+                    <p className="font-display text-3xl font-bold text-gradient">{item.valeur}</p>
+                    <p className="text-sm text-muted-foreground">{item.libelle}</p>
                   </div>
                 ))}
               </div>
