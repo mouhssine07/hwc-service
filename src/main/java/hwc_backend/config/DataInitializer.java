@@ -7,6 +7,7 @@ import hwc_backend.repository.UserRepository;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +15,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    private static final String ADMIN_EMAIL = "admin@hwc.com";
-    private static final String ADMIN_PASSWORD = "Admin@2026";
+    @Value("${ADMIN_EMAIL:admin@hwc.com}")
+    private String adminEmail;
+
+    @Value("${ADMIN_PASSWORD:Admin@2026}")
+    private String adminPassword;
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
@@ -29,10 +33,10 @@ public class DataInitializer implements CommandLineRunner {
         roleRepository.findByNom("ROLE_USER")
                 .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_USER")));
 
-        if (!userRepository.existsByEmail(ADMIN_EMAIL)) {
+        if (!userRepository.existsByEmail(adminEmail)) {
             User admin = new User();
-            admin.setEmail(ADMIN_EMAIL);
-            admin.setPassword(passwordEncoder.encode(ADMIN_PASSWORD));
+            admin.setEmail(adminEmail);
+            admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setNom("Admin");
             admin.setPrenom("HWC");
             admin.setActif(true);
