@@ -24,6 +24,22 @@ import PerformanceSousPression from "./pages/PerformanceSousPression.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
 import DashboardHome from "./pages/admin/DashboardHome.jsx";
 import AdminPlaceholder from "./pages/admin/AdminPlaceholder.jsx";
+import AccompagnementsPage from "./pages/admin/AccompagnementsPage.jsx";
+import CertificationsPage from "./pages/admin/CertificationsPage.jsx";
+import ChiffresClesPage from "./pages/admin/ChiffresClesPage.jsx";
+import ClientsConfiancePage from "./pages/admin/ClientsConfiancePage.jsx";
+import DemandesContactPage from "./pages/admin/DemandesContactPage.jsx";
+import EtiquettesPage from "./pages/admin/EtiquettesPage.jsx";
+import PaysPage from "./pages/admin/PaysPage.jsx";
+import ServiceFonctionnalitesPage from "./pages/admin/ServiceFonctionnalitesPage.jsx";
+import ServiceImagesPage from "./pages/admin/ServiceImagesPage.jsx";
+import ServicesPage from "./pages/admin/ServicesPage.jsx";
+import SousServiceAvantagesPage from "./pages/admin/SousServiceAvantagesPage.jsx";
+import SousServiceEtapesPage from "./pages/admin/SousServiceEtapesPage.jsx";
+import SousServiceFaqsPage from "./pages/admin/SousServiceFaqsPage.jsx";
+import SousServiceFonctionnalitesPage from "./pages/admin/SousServiceFonctionnalitesPage.jsx";
+import SousServicesPage from "./pages/admin/SousServicesPage.jsx";
+import TemoignagesPage from "./pages/admin/TemoignagesPage.jsx";
 import DashboardLayout from "./components/admin/layout/DashboardLayout.jsx";
 import ProtectedRoute from "./components/admin/layout/ProtectedRoute.jsx";
 
@@ -71,6 +87,22 @@ export default function App() {
           <Route path="/admin" element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
+              <Route path="services" element={<ServicesPage />} />
+              <Route path="sous-services" element={<SousServicesPage />} />
+              <Route path="etiquettes" element={<EtiquettesPage />} />
+              <Route path="temoignages" element={<TemoignagesPage />} />
+              <Route path="certifications" element={<CertificationsPage />} />
+              <Route path="pays" element={<PaysPage />} />
+              <Route path="chiffres-cles" element={<ChiffresClesPage />} />
+              <Route path="clients-confiance" element={<ClientsConfiancePage />} />
+              <Route path="demandes-contact" element={<DemandesContactPage />} />
+              <Route path="service-fonctionnalites" element={<ServiceFonctionnalitesPage />} />
+              <Route path="service-images" element={<ServiceImagesPage />} />
+              <Route path="sous-service-fonctionnalites" element={<SousServiceFonctionnalitesPage />} />
+              <Route path="sous-service-avantages" element={<SousServiceAvantagesPage />} />
+              <Route path="sous-service-etapes" element={<SousServiceEtapesPage />} />
+              <Route path="sous-service-faqs" element={<SousServiceFaqsPage />} />
+              <Route path="accompagnements" element={<AccompagnementsPage />} />
               <Route path="*" element={<AdminPlaceholder />} />
             </Route>
           </Route>
