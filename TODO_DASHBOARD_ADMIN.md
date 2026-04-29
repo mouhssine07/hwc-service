@@ -127,98 +127,98 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 7. UI Kit Admin - Prochaine phase
+## 7. UI Kit Admin - Terminé
 
-- [ ] Créer `Button.jsx`
-- [ ] Créer `Input.jsx`
-- [ ] Créer `Textarea.jsx`
-- [ ] Créer `Select.jsx`
-- [ ] Créer `Modal.jsx`
-- [ ] Créer `ConfirmDialog.jsx`
-- [ ] Créer `Table.jsx`
-- [ ] Créer `Pagination.jsx`
-- [ ] Créer `Card.jsx`
-- [ ] Créer `Badge.jsx`
-- [ ] Créer `Spinner.jsx`
-- [ ] Créer `EmptyState.jsx`
-- [ ] Vérifier la cohérence responsive des composants
-
----
-
-## 8. Pages CRUD Frontend
-
-- [ ] Créer `EtiquettesPage.jsx` + `EtiquetteForm.jsx`
-- [ ] Créer `PaysPage.jsx` + `PaysForm.jsx`
-- [ ] Créer `ChiffresClesPage.jsx` + `ChiffreCleForm.jsx`
-- [ ] Créer `ServicesPage.jsx` + `ServiceForm.jsx`
-- [ ] Créer `SousServicesPage.jsx` + `SousServiceForm.jsx`
-- [ ] Créer `ClientsConfiancePage.jsx` + `ClientConfianceForm.jsx`
-- [ ] Créer `TemoignagesPage.jsx` + `TemoignageForm.jsx`
-- [ ] Créer `CertificationsPage.jsx` + `CertificationForm.jsx`
-- [ ] Créer `ServiceFonctionnalitesPage.jsx` + `ServiceFonctionnaliteForm.jsx`
-- [ ] Créer `ServiceImagesPage.jsx` + `ServiceImageForm.jsx`
-- [ ] Créer `SousServiceFonctionnalitesPage.jsx` + `SousServiceFonctionnaliteForm.jsx`
-- [ ] Créer `SousServiceAvantagesPage.jsx` + `SousServiceAvantageForm.jsx`
-- [ ] Créer `SousServiceEtapesPage.jsx` + `SousServiceEtapeForm.jsx`
-- [ ] Créer `SousServiceFaqsPage.jsx` + `SousServiceFaqForm.jsx`
-- [ ] Créer `AccompagnementsPage.jsx` + `AccompagnementForm.jsx`
-- [ ] Créer `DemandesContactPage.jsx`
-- [ ] Ajouter recherche sur les pages principales
-- [ ] Ajouter pagination sur les tableaux
-- [ ] Ajouter confirmation suppression
-- [ ] Ajouter toasts succès/erreur
-- [ ] Ajouter loading states
-- [ ] Ajouter empty states
+- [x] Créer `Button.jsx`
+- [x] Créer `Input.jsx`
+- [x] Créer `Textarea.jsx`
+- [x] Créer `Select.jsx`
+- [x] Créer `Modal.jsx`
+- [x] Créer `ConfirmDialog.jsx`
+- [x] Créer `Table.jsx`
+- [x] Créer `Pagination.jsx`
+- [x] Créer `Card.jsx`
+- [x] Créer `Badge.jsx`
+- [x] Créer `Spinner.jsx`
+- [x] Créer `EmptyState.jsx`
+- [x] Vérifier la cohérence responsive des composants
 
 ---
 
-## 9. Upload Images
+## 8. Pages CRUD Frontend - Terminé
 
-- [ ] Créer `FileUploadController`
-- [ ] Créer endpoint `POST /api/admin/upload/image`
-- [ ] Créer dossier backend `uploads/images`
-- [ ] Générer les noms de fichiers avec UUID
-- [ ] Valider formats `jpg`, `png`, `webp`
-- [ ] Limiter taille fichier à `5MB`
-- [ ] Exposer `/uploads/**`
-- [ ] Créer `src/api/uploadApi.js`
-- [ ] Créer `ImageUpload.jsx`
-- [ ] Intégrer upload dans `ClientConfianceForm`
-- [ ] Intégrer upload dans `TemoignageForm`
-- [ ] Intégrer upload dans `CertificationForm`
-- [ ] Intégrer upload dans `ServiceImageForm`
-- [ ] Tester upload depuis le dashboard
-
----
-
-## 10. Connexion Progressive Du Site Vitrine À L'API
-
-- [ ] Connecter les chiffres clés à `/api/public/chiffres-cles`
-- [ ] Connecter les clients de confiance à `/api/public/clients-confiance`
-- [ ] Connecter les pays à `/api/public/pays`
-- [ ] Connecter les certifications à `/api/public/certifications`
-- [ ] Connecter les témoignages à `/api/public/temoignages`
-- [ ] Connecter les services à `/api/public/services`
-- [ ] Connecter les sous-services à `/api/public/sous-services/{id}`
-- [ ] Connecter les images services
-- [ ] Connecter le formulaire contact à `/api/public/demandes-contact`
-- [ ] Ajouter fallback statique si l'API ne répond pas
-- [ ] Tester que le site vitrine reste fonctionnel API éteinte
+- [x] Créer `EtiquettesPage.jsx` + `EtiquetteForm.jsx`
+- [x] Créer `PaysPage.jsx` + `PaysForm.jsx`
+- [x] Créer `ChiffresClesPage.jsx` + `ChiffreCleForm.jsx`
+- [x] Créer `ServicesPage.jsx` + `ServiceForm.jsx`
+- [x] Créer `SousServicesPage.jsx` + `SousServiceForm.jsx`
+- [x] Créer `ClientsConfiancePage.jsx` + `ClientConfianceForm.jsx`
+- [x] Créer `TemoignagesPage.jsx` + `TemoignageForm.jsx`
+- [x] Créer `CertificationsPage.jsx` + `CertificationForm.jsx`
+- [x] Créer `ServiceFonctionnalitesPage.jsx` + `ServiceFonctionnaliteForm.jsx`
+- [x] Créer `ServiceImagesPage.jsx` + `ServiceImageForm.jsx`
+- [x] Créer `SousServiceFonctionnalitesPage.jsx` + `SousServiceFonctionnaliteForm.jsx`
+- [x] Créer `SousServiceAvantagesPage.jsx` + `SousServiceAvantageForm.jsx`
+- [x] Créer `SousServiceEtapesPage.jsx` + `SousServiceEtapeForm.jsx`
+- [x] Créer `SousServiceFaqsPage.jsx` + `SousServiceFaqForm.jsx`
+- [x] Créer `AccompagnementsPage.jsx` + `AccompagnementForm.jsx`
+- [x] Créer `DemandesContactPage.jsx`
+- [x] Ajouter recherche sur les pages principales
+- [x] Ajouter pagination sur les tableaux
+- [x] Ajouter confirmation suppression
+- [x] Ajouter toasts succès/erreur
+- [x] Ajouter loading states
+- [x] Ajouter empty states
 
 ---
 
-## 11. Validation Finale
+## 9. Upload Images - Terminé
 
-- [ ] Tester build frontend avec `npm.cmd run build`
-- [ ] Tester backend avec `mvn test`
+- [x] Créer `FileUploadController`
+- [x] Créer endpoint `POST /api/admin/upload/image`
+- [x] Créer dossier backend `uploads/images`
+- [x] Générer les noms de fichiers avec UUID
+- [x] Valider formats `jpg`, `png`, `webp`
+- [x] Limiter taille fichier à `5MB`
+- [x] Exposer `/uploads/**`
+- [x] Créer `src/api/uploadApi.js`
+- [x] Créer `ImageUpload.jsx`
+- [x] Intégrer upload dans `ClientConfianceForm`
+- [x] Intégrer upload dans `TemoignageForm`
+- [x] Intégrer upload dans `CertificationForm`
+- [x] Intégrer upload dans `ServiceImageForm`
+- [x] Tester upload depuis le dashboard
+
+---
+
+## 10. Connexion Progressive Du Site Vitrine À L'API - Terminé
+
+- [x] Connecter les chiffres clés à `/api/public/chiffres-cles`
+- [x] Connecter les clients de confiance à `/api/public/clients-confiance`
+- [x] Connecter les pays à `/api/public/pays`
+- [x] Connecter les certifications à `/api/public/certifications`
+- [x] Connecter les témoignages à `/api/public/temoignages`
+- [x] Connecter les services à `/api/public/services`
+- [x] Connecter les sous-services à `/api/public/sous-services/{id}`
+- [x] Connecter les images services
+- [x] Connecter le formulaire contact à `/api/public/demandes-contact`
+- [x] Ajouter fallback statique si l'API ne répond pas
+- [x] Tester que le site vitrine reste fonctionnel API éteinte
+
+---
+
+## 11. Validation Finale - En attente validation manuelle
+
+- [x] Tester build frontend avec `npm.cmd run build`
+- [x] Tester backend avec `mvn test`
 - [ ] Tester login admin complet
 - [ ] Tester chaque page CRUD
-- [ ] Tester upload images
+- [x] Tester upload images
 - [ ] Tester responsive dashboard mobile
 - [ ] Tester responsive site vitrine
-- [ ] Vérifier que le dashboard n'affiche pas header/footer vitrine
-- [ ] Vérifier que les routes publiques restent accessibles
-- [ ] Vérifier que les routes admin sont protégées
+- [x] Vérifier que le dashboard n'affiche pas header/footer vitrine
+- [x] Vérifier que les routes publiques restent accessibles
+- [x] Vérifier que les routes admin sont protégées
 - [ ] Changer le mot de passe admin par défaut
 
 ---
@@ -226,4 +226,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 ## Prochaine Tâche À Faire Maintenant
 
 - [x] Commencer Phase 1 : ajouter Spring Security + JWT dans le backend
-- [ ] Commencer Phase 7 : créer le UI Kit Admin
+- [x] Commencer Phase 7 : créer le UI Kit Admin
+- [x] Commencer Phase 8 : créer les pages CRUD Frontend
+- [x] Commencer Phase 9 : upload images
+- [x] Commencer Phase 10 : connecter le site vitrine à l'API
