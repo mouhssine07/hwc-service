@@ -104,9 +104,14 @@ export default function Footer() {
 
         <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-white/20 pt-7 text-sm font-medium text-primary-foreground/90 md:flex-row md:items-center">
           <p>© {new Date().getFullYear()} Harmony Works Consulting. Tous droits réservés.</p>
-          <p>
-            Conçu avec passion <span className="text-sm uppercase tracking-wide">MU MA FR LU</span>
-          </p>
+          <div className="flex flex-col items-start gap-2 md:items-end">
+            <Link className="transition-colors hover:text-white" to="/login">
+              Accès administrateur
+            </Link>
+            <p>
+              Conçu avec passion <span className="text-sm uppercase tracking-wide">MU MA FR LU</span>
+            </p>
+          </div>
         </div>
       </div>
     </footer>
