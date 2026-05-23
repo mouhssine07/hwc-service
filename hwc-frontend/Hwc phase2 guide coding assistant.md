@@ -117,6 +117,12 @@
   - création/modification/suppression des règles
   - sélection catégorie diagnostic, service HWC et sous-service HWC
   - activation/désactivation des règles
+- Données de démonstration ajoutées pour tester l'admin et les recommandations :
+  - services HWC exemple : Marketing Digital, Leadership & Management, Performance Commerciale, Organisation & Process
+  - sous-services exemple : SEO & SEA, Contenu & Reseaux Sociaux, Coaching Dirigeants, Prospection Commerciale, Audit Organisationnel
+  - étiquettes, fonctionnalités, avantages, étapes, FAQs, accompagnements
+  - chiffres clés, témoignage, certification, client de confiance et pays
+  - règles de recommandation reliées aux services/sous-services seedés
 - Vérifications réussies :
   - Backend : `./mvnw.cmd test` -> 31 tests OK
   - Frontend : `npm run build` OK
