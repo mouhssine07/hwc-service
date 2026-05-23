@@ -81,6 +81,10 @@
   - `DiagnosticStartPage.jsx`
   - `DiagnosticQuestionsPage.jsx`
   - `DiagnosticResultatPage.jsx`
+- Suppression d'un diagnostic par le client ajoutée :
+  - endpoint `DELETE /api/client/diagnostics/{id}`
+  - suppression des recommandations, réponses et scores associés avant suppression du diagnostic
+  - bouton de suppression dans l'historique client
 - Routes frontend client disponibles :
   - `/client/login`
   - `/client/register`

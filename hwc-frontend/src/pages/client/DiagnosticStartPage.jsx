@@ -1,8 +1,8 @@
-import { ArrowRight, ClipboardList, History, Loader2, LogOut } from "lucide-react";
+import { ArrowRight, ClipboardList, History, Loader2, LogOut, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { getDiagnosticHistory, startDiagnostic } from "../../api/diagnosticApi.js";
+import { deleteDiagnostic, getDiagnosticHistory, startDiagnostic } from "../../api/diagnosticApi.js";
 import useClientAuthStore from "../../store/clientAuthStore.js";
 
 export default function DiagnosticStartPage() {
@@ -11,11 +11,16 @@ export default function DiagnosticStartPage() {
   const clientLogout = useClientAuthStore((state) => state.clientLogout);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
+  const [deletingId, setDeletingId] = useState(null);
 
-  useEffect(() => {
-    getDiagnosticHistory()
+  const loadHistory = () => {
+    return getDiagnosticHistory()
       .then(setHistory)
       .catch(() => setHistory([]));
+  };
+
+  useEffect(() => {
+    loadHistory();
   }, []);
 
   const handleStart = async () => {
@@ -34,6 +39,24 @@ export default function DiagnosticStartPage() {
   const handleLogout = () => {
     clientLogout();
     navigate("/client/login", { replace: true });
+  };
+
+  const handleDelete = async (diagnosticId) => {
+    const confirmed = window.confirm("Supprimer ce diagnostic de votre historique ?");
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingId(diagnosticId);
+    try {
+      await deleteDiagnostic(diagnosticId);
+      toast.success("Diagnostic supprime.");
+      await loadHistory();
+    } catch {
+      toast.error("Impossible de supprimer ce diagnostic.");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -101,20 +124,37 @@ export default function DiagnosticStartPage() {
               </p>
             ) : (
               history.slice(0, 5).map((diagnostic) => (
-                <button
+                <div
                   key={diagnostic.diagnosticId}
-                  type="button"
-                  className="flex w-full items-center justify-between rounded-xl border border-border p-4 text-left transition-colors hover:bg-muted"
-                  onClick={() => navigate(`/client/diagnostic/${diagnostic.diagnosticId}/resultat`)}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border p-4"
                 >
-                  <span>
+                  <button
+                    type="button"
+                    className="min-w-0 flex-1 text-left"
+                    onClick={() => navigate(`/client/diagnostic/${diagnostic.diagnosticId}/resultat`)}
+                  >
                     <span className="block text-sm font-semibold">Diagnostic #{diagnostic.diagnosticId}</span>
                     <span className="text-xs text-muted-foreground">{diagnostic.statut}</span>
-                  </span>
-                  <span className="text-sm font-bold text-primary">
-                    {diagnostic.scoreGlobal ?? "--"}/100
-                  </span>
-                </button>
+                  </button>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="text-sm font-bold text-primary">
+                      {diagnostic.scoreGlobal ?? "--"}/100
+                    </span>
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 items-center justify-center rounded-lg border border-red-200 text-red-600 transition-colors hover:bg-red-50"
+                      aria-label="Supprimer le diagnostic"
+                      disabled={deletingId === diagnostic.diagnosticId}
+                      onClick={() => handleDelete(diagnostic.diagnosticId)}
+                    >
+                      {deletingId === diagnostic.diagnosticId ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
               ))
             )}
           </div>

@@ -20,6 +20,7 @@ import hwc_backend.repository.DiagnosticRepository;
 import hwc_backend.repository.OptionReponseRepository;
 import hwc_backend.repository.QuestionRepository;
 import hwc_backend.repository.ReponseDiagnosticRepository;
+import hwc_backend.repository.RecommandationRepository;
 import hwc_backend.repository.ScoreRepository;
 import hwc_backend.repository.UserRepository;
 import hwc_backend.service.DiagnosticService;
@@ -43,6 +44,7 @@ public class DiagnosticServiceImpl implements DiagnosticService {
     private final QuestionRepository questionRepository;
     private final OptionReponseRepository optionReponseRepository;
     private final ReponseDiagnosticRepository reponseDiagnosticRepository;
+    private final RecommandationRepository recommandationRepository;
     private final ScoreRepository scoreRepository;
     private final ScoringService scoringService;
     private final RecommandationService recommandationService;
@@ -138,6 +140,16 @@ public class DiagnosticServiceImpl implements DiagnosticService {
     public DiagnosticResultatDTO getById(Long diagnosticId, String email) {
         Diagnostic diagnostic = findOwnedDiagnostic(diagnosticId, email);
         return toDiagnosticDTO(diagnostic, scoreRepository.findByDiagnosticId(diagnosticId));
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long diagnosticId, String email) {
+        Diagnostic diagnostic = findOwnedDiagnostic(diagnosticId, email);
+        recommandationRepository.deleteByDiagnosticId(diagnosticId);
+        reponseDiagnosticRepository.deleteByDiagnosticId(diagnosticId);
+        scoreRepository.deleteByDiagnosticId(diagnosticId);
+        diagnosticRepository.delete(diagnostic);
     }
 
     private User findUser(String email) {

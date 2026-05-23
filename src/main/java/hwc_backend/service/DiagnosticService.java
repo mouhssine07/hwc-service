@@ -19,4 +19,6 @@ public interface DiagnosticService {
     List<DiagnosticResultatDTO> history(String email);
 
     DiagnosticResultatDTO getById(Long diagnosticId, String email);
+
+    void delete(Long diagnosticId, String email);
 }

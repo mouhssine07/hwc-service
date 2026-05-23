@@ -30,6 +30,10 @@ export async function getDiagnosticHistory() {
   return response.data;
 }
 
+export async function deleteDiagnostic(diagnosticId) {
+  await clientApi.delete(`/client/diagnostics/${diagnosticId}`);
+}
+
 export async function getDiagnosticRecommandations(diagnosticId) {
   const response = await clientApi.get(`/client/diagnostics/${diagnosticId}/recommandations`);
   return response.data;

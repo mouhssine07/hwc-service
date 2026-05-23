@@ -13,4 +13,6 @@ public interface ReponseDiagnosticRepository extends JpaRepository<ReponseDiagno
     Optional<ReponseDiagnostic> findByDiagnosticIdAndQuestionId(Long diagnosticId, Long questionId);
 
     long countByDiagnosticId(Long diagnosticId);
+
+    void deleteByDiagnosticId(Long diagnosticId);
 }

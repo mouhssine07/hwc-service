@@ -2,6 +2,7 @@ package hwc_backend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -250,6 +251,10 @@ class AuthSecurityIntegrationTests {
         assertEquals("EXCELLENT", result.get("niveauMaturite").asText());
         assertEquals(5, result.get("scores").size());
         assertTrue(result.get("scoreGlobal").asDouble() >= 99.0);
+
+        mockMvc.perform(delete("/api/client/diagnostics/" + diagnosticId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
     }
 
     @Test
