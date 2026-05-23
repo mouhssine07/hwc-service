@@ -26,7 +26,7 @@
 
 ---
 
-## État d'avancement réel au 16 mai 2026
+## Etat d'avancement reel au 23 mai 2026
 
 ### Terminé
 
@@ -49,21 +49,65 @@
   - Enum : `DiagnosticStatut`
   - Repositories associés
 - Seed automatique ajouté pour les 5 catégories de diagnostic
-- Vérification backend réussie avec `mvn test`
+- DTOs du module diagnostic ajoutés :
+  - `CategorieDiagnosticDTO`
+  - `QuestionDTO`
+  - `OptionReponseDTO`
+  - `DiagnosticStartDTO`
+  - `RepondreQuestionDTO`
+  - `DiagnosticResultatDTO`
+  - `ScoreDTO`
+- Backend du diagnostic implémenté :
+  - `ScoringService`
+  - `DiagnosticService`
+  - `DiagnosticController`
+- Endpoints diagnostic disponibles :
+  - `POST /api/client/diagnostics/start`
+  - `GET /api/client/diagnostics/questions`
+  - `POST /api/client/diagnostics/{id}/reponses`
+  - `POST /api/client/diagnostics/{id}/finalize`
+  - `GET /api/client/diagnostics/history`
+  - `GET /api/client/diagnostics/{id}`
+- Seed automatique ajouté pour les 25 questions du diagnostic et leurs options de réponse
+- Test fonctionnel backend ajouté pour le parcours diagnostic client complet
+- Frontend client ajouté :
+  - `clientAuthStore.js`
+  - `clientAxiosInstance.js`
+  - `clientAuthApi.js`
+  - `diagnosticApi.js`
+  - `ClientProtectedRoute.jsx`
+  - `ClientLoginPage.jsx`
+  - `ClientRegisterPage.jsx`
+  - `DiagnosticStartPage.jsx`
+  - `DiagnosticQuestionsPage.jsx`
+  - `DiagnosticResultatPage.jsx`
+- Routes frontend client disponibles :
+  - `/client/login`
+  - `/client/register`
+  - `/client/diagnostic`
+  - `/client/diagnostic/:diagnosticId/questions`
+  - `/client/diagnostic/:diagnosticId/resultat`
+- Navigation admin améliorée : groupes de sidebar collapsibles avec ouverture animée
+- Vérifications réussies :
+  - Backend : `./mvnw.cmd test` -> 31 tests OK
+  - Frontend : `npm run build` OK
 
 ### À reprendre ensuite
 
-1. Ajouter les DTOs du module diagnostic
-2. Implémenter `ScoringService`
-3. Implémenter `DiagnosticService`
-4. Exposer `DiagnosticController`
-5. Ajouter les questions/options de diagnostic et les tests métier
+1. Tester manuellement le parcours client complet avec backend + frontend lancés localement
+2. Améliorer l'UX du questionnaire si nécessaire après test réel
+3. Démarrer le Module 4 Backend : moteur de recommandations
+4. Ajouter les entités/repositories/règles de recommandations
+5. Exposer les endpoints recommandations client/admin
 
 ### Notes de reprise
 
 - Ne pas recréer `User`, `Role`, `UserRepository` ou `RoleRepository` : ils existaient déjà depuis la phase 1 et ont été étendus.
 - Le fichier de référence initial indiquait des noms comme `password_hash`, mais le code existant utilise déjà le champ Java `password`.
 - Le prochain travail doit partir de l'état réel du repo, pas seulement du schéma théorique du guide.
+- Les commits de référence sur `feature/new-functionality` sont :
+  - `98920de feat: add diagnostic backend flow`
+  - `05680d4 feat: add client diagnostic frontend`
 
 ---
 
