@@ -23,6 +23,7 @@ import hwc_backend.repository.ReponseDiagnosticRepository;
 import hwc_backend.repository.ScoreRepository;
 import hwc_backend.repository.UserRepository;
 import hwc_backend.service.DiagnosticService;
+import hwc_backend.service.RecommandationService;
 import hwc_backend.service.ScoringService;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
@@ -44,6 +45,7 @@ public class DiagnosticServiceImpl implements DiagnosticService {
     private final ReponseDiagnosticRepository reponseDiagnosticRepository;
     private final ScoreRepository scoreRepository;
     private final ScoringService scoringService;
+    private final RecommandationService recommandationService;
 
     @Override
     @Transactional
@@ -116,7 +118,10 @@ public class DiagnosticServiceImpl implements DiagnosticService {
         diagnostic.setStatut(DiagnosticStatut.TERMINE);
         diagnostic.setDateFin(LocalDateTime.now());
 
-        return toDiagnosticDTO(diagnosticRepository.save(diagnostic), scores);
+        Diagnostic saved = diagnosticRepository.save(diagnostic);
+        recommandationService.genererRecommandations(saved.getId());
+
+        return toDiagnosticDTO(saved, scores);
     }
 
     @Override

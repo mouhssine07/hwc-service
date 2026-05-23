@@ -50,6 +50,7 @@ import ClientProtectedRoute from "./pages/client/ClientProtectedRoute.jsx";
 import DiagnosticStartPage from "./pages/client/DiagnosticStartPage.jsx";
 import DiagnosticQuestionsPage from "./pages/client/DiagnosticQuestionsPage.jsx";
 import DiagnosticResultatPage from "./pages/client/DiagnosticResultatPage.jsx";
+import RecommandationsPage from "./pages/client/RecommandationsPage.jsx";
 
 function Home() {
   return (
@@ -104,6 +105,7 @@ export default function App() {
             <Route path="diagnostic" element={<DiagnosticStartPage />} />
             <Route path="diagnostic/:diagnosticId/questions" element={<DiagnosticQuestionsPage />} />
             <Route path="diagnostic/:diagnosticId/resultat" element={<DiagnosticResultatPage />} />
+            <Route path="diagnostic/:diagnosticId/recommandations" element={<RecommandationsPage />} />
           </Route>
           <Route path="/admin" element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>

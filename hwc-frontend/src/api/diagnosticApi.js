@@ -29,3 +29,13 @@ export async function getDiagnosticHistory() {
   const response = await clientApi.get("/client/diagnostics/history");
   return response.data;
 }
+
+export async function getDiagnosticRecommandations(diagnosticId) {
+  const response = await clientApi.get(`/client/diagnostics/${diagnosticId}/recommandations`);
+  return response.data;
+}
+
+export async function getDiagnosticPlanAction(diagnosticId) {
+  const response = await clientApi.get(`/client/diagnostics/${diagnosticId}/plan-action`);
+  return response.data;
+}

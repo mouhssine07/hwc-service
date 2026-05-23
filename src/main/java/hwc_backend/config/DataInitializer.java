@@ -5,9 +5,11 @@ import hwc_backend.entity.User;
 import hwc_backend.entity.CategorieDiagnostic;
 import hwc_backend.entity.OptionReponse;
 import hwc_backend.entity.Question;
+import hwc_backend.entity.RegleRecommandation;
 import hwc_backend.repository.CategorieDiagnosticRepository;
 import hwc_backend.repository.OptionReponseRepository;
 import hwc_backend.repository.QuestionRepository;
+import hwc_backend.repository.RegleRecommandationRepository;
 import hwc_backend.repository.RoleRepository;
 import hwc_backend.repository.UserRepository;
 import java.math.BigDecimal;
@@ -33,6 +35,7 @@ public class DataInitializer implements CommandLineRunner {
     private final CategorieDiagnosticRepository categorieDiagnosticRepository;
     private final QuestionRepository questionRepository;
     private final OptionReponseRepository optionReponseRepository;
+    private final RegleRecommandationRepository regleRecommandationRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -98,6 +101,22 @@ public class DataInitializer implements CommandLineRunner {
                 "Votre communication met-elle en avant des preuves et cas clients ?",
                 "Analysez-vous les performances de vos actions marketing ?"
         });
+
+        seedRegle(marketing, "50.00", "<", "Developper votre strategie Marketing Digital",
+                "Structurer un plan marketing mesurable, renforcer la presence digitale et prioriser les canaux d'acquisition.",
+                "COURT_TERME", "+8 a +12 points marketing", "Taux de conversion;Trafic qualifie;Leads generes", 1);
+        seedRegle(leadership, "50.00", "<", "Renforcer votre leadership managerial",
+                "Clarifier la vision, les rituels de management et le feedback pour aligner les equipes.",
+                "MOYEN_TERME", "+6 a +10 points leadership", "Rituels managers;Feedbacks realises;Objectifs suivis", 2);
+        seedRegle(maturiteDigitale, "60.00", "<", "Moderniser votre maturite digitale",
+                "Mettre en place les outils, donnees et automatisations prioritaires pour fluidifier les operations.",
+                "LONG_TERME", "+8 a +15 points digital", "Process digitalises;Donnees centralisees;Automatisations actives", 3);
+        seedRegle(performanceCommerciale, "65.00", "<", "Optimiser votre performance commerciale",
+                "Formaliser la prospection, le suivi des opportunites et la fidelisation client.",
+                "MOYEN_TERME", "+6 a +12 points commercial", "Taux conversion;Pipeline suivi;Clients fidelises", 2);
+        seedRegle(organisation, "60.00", "<", "Restructurer votre organisation interne",
+                "Documenter les processus et lever les blocages operationnels pour soutenir la croissance.",
+                "LONG_TERME", "+5 a +10 points organisation", "Process formalises;Delais reduits;Productivite equipe", 3);
     }
 
     private CategorieDiagnostic seedCategorie(String nom, String description, String icone, BigDecimal poids, int ordre) {
@@ -123,5 +142,34 @@ public class DataInitializer implements CommandLineRunner {
 
     private void seedOption(Question question, String texte, int poids, int ordre) {
         optionReponseRepository.save(new OptionReponse(null, question, texte, poids, ordre));
+    }
+
+    private void seedRegle(
+            CategorieDiagnostic categorie,
+            String seuil,
+            String operateur,
+            String titre,
+            String description,
+            String horizon,
+            String impact,
+            String kpis,
+            int priorite
+    ) {
+        if (regleRecommandationRepository.existsByCategorieIdAndTitreRecommandation(categorie.getId(), titre)) {
+            return;
+        }
+
+        RegleRecommandation regle = new RegleRecommandation();
+        regle.setCategorie(categorie);
+        regle.setSeuilScore(new BigDecimal(seuil));
+        regle.setOperateur(operateur);
+        regle.setTitreRecommandation(titre);
+        regle.setDescriptionRecommandation(description);
+        regle.setHorizon(horizon);
+        regle.setImpactEstime(impact);
+        regle.setKpisSuggeres(kpis);
+        regle.setPriorite(priorite);
+        regle.setActif(true);
+        regleRecommandationRepository.save(regle);
     }
 }

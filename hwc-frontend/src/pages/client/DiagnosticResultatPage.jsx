@@ -1,4 +1,4 @@
-import { ArrowLeft, BarChart3, RefreshCcw, Trophy } from "lucide-react";
+import { ArrowLeft, BarChart3, ListChecks, RefreshCcw, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
@@ -73,6 +73,14 @@ export default function DiagnosticResultatPage() {
             <p className="mt-6 text-sm leading-6 text-muted-foreground">
               Ce score resume votre maturite globale selon les categories ponderees du diagnostic HWC.
             </p>
+            <button
+              className="btn btn-hero mt-6 w-full"
+              type="button"
+              onClick={() => navigate(`/client/diagnostic/${diagnosticId}/recommandations`)}
+            >
+              <ListChecks className="mr-2 h-4 w-4" />
+              Voir mes recommandations
+            </button>
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6 shadow-card">

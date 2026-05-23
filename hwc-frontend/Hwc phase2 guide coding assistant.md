@@ -96,6 +96,21 @@
 - Sécurité client renforcée :
   - un client désactivé est rejeté par le filtre JWT sur les requêtes suivantes
   - le frontend client vérifie périodiquement `/api/client/auth/me` et déconnecte le client si son compte est désactivé
+- Module 4 Recommandations démarré :
+  - entités `RegleRecommandation` et `Recommandation`
+  - repositories associés
+  - `RecommandationService`
+  - génération automatique des recommandations à la finalisation du diagnostic
+  - seed de 5 règles métier de base
+  - endpoints client :
+    - `GET /api/client/diagnostics/{id}/recommandations`
+    - `GET /api/client/diagnostics/{id}/plan-action`
+  - endpoints admin règles :
+    - `GET /api/admin/regles-recommandation`
+    - `POST /api/admin/regles-recommandation`
+    - `PUT /api/admin/regles-recommandation/{id}`
+    - `DELETE /api/admin/regles-recommandation/{id}`
+  - page frontend client `/client/diagnostic/:diagnosticId/recommandations`
 - Vérifications réussies :
   - Backend : `./mvnw.cmd test` -> 31 tests OK
   - Frontend : `npm run build` OK
@@ -104,9 +119,9 @@
 
 1. Tester manuellement le parcours client complet avec backend + frontend lancés localement
 2. Améliorer l'UX du questionnaire si nécessaire après test réel
-3. Démarrer le Module 4 Backend : moteur de recommandations
-4. Ajouter les entités/repositories/règles de recommandations
-5. Exposer les endpoints recommandations client/admin
+3. Ajouter une interface admin complète pour configurer les règles de recommandation
+4. Relier les règles aux services/sous-services HWC existants depuis l'admin
+5. Démarrer le Module 5 : Dashboard décisionnel client
 
 ### Notes de reprise
 
