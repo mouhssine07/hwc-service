@@ -250,6 +250,19 @@ class AuthSecurityIntegrationTests {
         assertTrue(result.get("scoreGlobal").asDouble() >= 99.0);
     }
 
+    @Test
+    void disabledClientTokenIsRejectedOnNextRequest() throws Exception {
+        String token = loginClientAndGetToken();
+
+        User client = userRepository.findByEmail(CLIENT_EMAIL).orElseThrow();
+        client.setActif(false);
+        userRepository.save(client);
+
+        mockMvc.perform(get("/api/client/auth/me")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isUnauthorized());
+    }
+
     private String loginAndGetToken() throws Exception {
         String loginResponse = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -93,6 +93,9 @@
   - endpoint `PATCH /api/admin/users/clients/{id}/status`
   - page frontend `/admin/clients`
   - activation/désactivation des comptes clients
+- Sécurité client renforcée :
+  - un client désactivé est rejeté par le filtre JWT sur les requêtes suivantes
+  - le frontend client vérifie périodiquement `/api/client/auth/me` et déconnecte le client si son compte est désactivé
 - Vérifications réussies :
   - Backend : `./mvnw.cmd test` -> 31 tests OK
   - Frontend : `npm run build` OK
