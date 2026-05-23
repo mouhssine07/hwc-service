@@ -29,6 +29,7 @@ import AccompagnementsPage from "./pages/admin/AccompagnementsPage.jsx";
 import CertificationsPage from "./pages/admin/CertificationsPage.jsx";
 import ChiffresClesPage from "./pages/admin/ChiffresClesPage.jsx";
 import ClientsConfiancePage from "./pages/admin/ClientsConfiancePage.jsx";
+import ClientsPage from "./pages/admin/ClientsPage.jsx";
 import DemandesContactPage from "./pages/admin/DemandesContactPage.jsx";
 import EtiquettesPage from "./pages/admin/EtiquettesPage.jsx";
 import PaysPage from "./pages/admin/PaysPage.jsx";
@@ -115,6 +116,7 @@ export default function App() {
               <Route path="pays" element={<PaysPage />} />
               <Route path="chiffres-cles" element={<ChiffresClesPage />} />
               <Route path="clients-confiance" element={<ClientsConfiancePage />} />
+              <Route path="clients" element={<ClientsPage />} />
               <Route path="demandes-contact" element={<DemandesContactPage />} />
               <Route path="service-fonctionnalites" element={<ServiceFonctionnalitesPage />} />
               <Route path="service-images" element={<ServiceImagesPage />} />

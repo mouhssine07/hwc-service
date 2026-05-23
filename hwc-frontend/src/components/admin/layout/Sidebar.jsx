@@ -45,6 +45,10 @@ const groups = [
     ],
   },
   {
+    label: "Utilisateurs",
+    items: [{ label: "Clients", href: "/admin/clients", icon: Users }],
+  },
+  {
     label: "Détails services",
     items: [
       { label: "Fonctionnalités services", href: "/admin/service-fonctionnalites", icon: ListChecks },

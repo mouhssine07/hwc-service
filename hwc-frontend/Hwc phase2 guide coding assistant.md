@@ -88,6 +88,11 @@
   - `/client/diagnostic/:diagnosticId/questions`
   - `/client/diagnostic/:diagnosticId/resultat`
 - Navigation admin améliorée : groupes de sidebar collapsibles avec ouverture animée
+- Gestion admin des clients ajoutée :
+  - endpoint `GET /api/admin/users/clients`
+  - endpoint `PATCH /api/admin/users/clients/{id}/status`
+  - page frontend `/admin/clients`
+  - activation/désactivation des comptes clients
 - Vérifications réussies :
   - Backend : `./mvnw.cmd test` -> 31 tests OK
   - Frontend : `npm run build` OK
