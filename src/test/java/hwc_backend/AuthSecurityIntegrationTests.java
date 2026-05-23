@@ -107,6 +107,7 @@ class AuthSecurityIntegrationTests {
             "/api/admin/accompagnements",
             "/api/admin/users/clients",
             "/api/admin/regles-recommandation",
+            "/api/admin/regles-recommandation/categories",
             "/api/admin/dashboard/stats"
     })
     void adminListEndpointsRequireValidToken(String endpoint) throws Exception {

@@ -46,7 +46,10 @@ const groups = [
   },
   {
     label: "Utilisateurs",
-    items: [{ label: "Clients", href: "/admin/clients", icon: Users }],
+    items: [
+      { label: "Clients", href: "/admin/clients", icon: Users },
+      { label: "Regles recommandation", href: "/admin/regles-recommandation", icon: ListChecks },
+    ],
   },
   {
     label: "Détails services",

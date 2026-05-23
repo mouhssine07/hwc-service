@@ -1,6 +1,8 @@
 package hwc_backend.controller.admin;
 
+import hwc_backend.dto.diagnostic.CategorieDiagnosticDTO;
 import hwc_backend.dto.recommandation.RegleRecommandationDTO;
+import hwc_backend.repository.CategorieDiagnosticRepository;
 import hwc_backend.service.RecommandationService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -22,10 +24,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReglesRecommandationAdminController {
 
     private final RecommandationService recommandationService;
+    private final CategorieDiagnosticRepository categorieDiagnosticRepository;
 
     @GetMapping
     public ResponseEntity<List<RegleRecommandationDTO>> getAll() {
         return ResponseEntity.ok(recommandationService.getRegles());
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategorieDiagnosticDTO>> getCategories() {
+        return ResponseEntity.ok(categorieDiagnosticRepository.findAllByOrderByOrdreAsc().stream()
+                .map(categorie -> new CategorieDiagnosticDTO(
+                        categorie.getId(),
+                        categorie.getNom(),
+                        categorie.getDescription(),
+                        categorie.getIcone(),
+                        categorie.getPoids(),
+                        categorie.getOrdre(),
+                        List.of()
+                ))
+                .toList());
     }
 
     @PostMapping

@@ -107,10 +107,16 @@
     - `GET /api/client/diagnostics/{id}/plan-action`
   - endpoints admin règles :
     - `GET /api/admin/regles-recommandation`
+    - `GET /api/admin/regles-recommandation/categories`
     - `POST /api/admin/regles-recommandation`
     - `PUT /api/admin/regles-recommandation/{id}`
     - `DELETE /api/admin/regles-recommandation/{id}`
   - page frontend client `/client/diagnostic/:diagnosticId/recommandations`
+- Interface admin des règles de recommandation ajoutée :
+  - page `/admin/regles-recommandation`
+  - création/modification/suppression des règles
+  - sélection catégorie diagnostic, service HWC et sous-service HWC
+  - activation/désactivation des règles
 - Vérifications réussies :
   - Backend : `./mvnw.cmd test` -> 31 tests OK
   - Frontend : `npm run build` OK
@@ -119,8 +125,8 @@
 
 1. Tester manuellement le parcours client complet avec backend + frontend lancés localement
 2. Améliorer l'UX du questionnaire si nécessaire après test réel
-3. Ajouter une interface admin complète pour configurer les règles de recommandation
-4. Relier les règles aux services/sous-services HWC existants depuis l'admin
+3. Tester manuellement la configuration des règles de recommandation depuis l'admin
+4. Améliorer l'affichage client des recommandations si nécessaire
 5. Démarrer le Module 5 : Dashboard décisionnel client
 
 ### Notes de reprise
