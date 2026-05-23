@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Check, ChevronDown, Globe2, Menu, X } from "lucide-react";
+import { Check, ChevronDown, ClipboardList, Globe2, Menu, X } from "lucide-react";
 
 const offers = [
   {
@@ -161,6 +161,10 @@ export default function Header() {
 
           <div className="hidden items-center gap-4 lg:flex">
             <LanguageSelector />
+            <Link className="btn btn-outline-hero h-12" to="/client/diagnostic">
+              <ClipboardList className="mr-2 h-4 w-4" />
+              Diagnostic gratuit
+            </Link>
             <a className="btn btn-cta h-12" href="https://calendly.com" target="_blank" rel="noreferrer">
               Discutons de votre projet
             </a>
@@ -200,6 +204,10 @@ export default function Header() {
               <a className="btn btn-cta mt-4 w-full" href="https://calendly.com" target="_blank" rel="noreferrer">
                 Discutons de votre projet
               </a>
+              <Link className="btn btn-outline-hero w-full" to="/client/diagnostic">
+                <ClipboardList className="mr-2 h-4 w-4" />
+                Lancer mon diagnostic
+              </Link>
             </div>
           </div>
         )}

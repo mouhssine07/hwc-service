@@ -85,6 +85,9 @@
   - endpoint `DELETE /api/client/diagnostics/{id}`
   - suppression des recommandations, réponses et scores associés avant suppression du diagnostic
   - bouton de suppression dans l'historique client
+- Accès vitrine au diagnostic ajouté :
+  - bouton `Diagnostic gratuit` dans le header desktop/mobile
+  - CTA `Lancer mon diagnostic` dans le hero public
 - Routes frontend client disponibles :
   - `/client/login`
   - `/client/register`

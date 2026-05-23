@@ -1,5 +1,6 @@
-import { ArrowRight, Calendar, Mouse } from "lucide-react";
+import { ArrowRight, Calendar, ClipboardList, Mouse } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getPublicClientsConfiance } from "../api/publicContentApi.js";
 
 const fallbackClients = [
@@ -63,14 +64,18 @@ export default function Hero() {
             développement du leadership et de l'excellence opérationnelle pour une transformation mesurable et durable.
           </p>
           <div className="flex animate-fade-in flex-col items-center justify-center gap-4 sm:flex-row [animation-delay:0.6s]">
-            <button className="btn btn-hero h-14 px-8 text-base" onClick={scrollToServices}>
-              Découvrez nos services
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </button>
+            <Link className="btn btn-hero h-14 px-8 text-base" to="/client/diagnostic">
+              <ClipboardList className="mr-2 h-5 w-5" />
+              Lancer mon diagnostic
+            </Link>
             <a className="btn btn-outline-hero h-14 px-8 text-base" href="https://calendly.com" target="_blank" rel="noreferrer">
               <Calendar className="mr-2 h-5 w-5" />
               Profitez de votre audit offert
             </a>
+            <button className="btn h-14 px-6 text-base text-primary hover:bg-accent/40" onClick={scrollToServices}>
+              Services
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </button>
           </div>
           <div className="mt-16 animate-fade-in [animation-delay:0.8s]">
             <p className="mb-4 text-sm text-muted-foreground">Ils nous font confiance</p>
