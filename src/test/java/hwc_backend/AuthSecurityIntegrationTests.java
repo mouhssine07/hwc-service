@@ -1,5 +1,7 @@
 package hwc_backend;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -187,6 +189,64 @@ class AuthSecurityIntegrationTests {
                                 }
                                 """))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void clientCanCompleteDiagnosticAndGetScores() throws Exception {
+        String token = loginClientAndGetToken();
+
+        String questionsResponse = mockMvc.perform(get("/api/client/diagnostics/questions")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode categories = objectMapper.readTree(questionsResponse);
+        assertEquals(5, categories.size());
+
+        String startResponse = mockMvc.perform(post("/api/client/diagnostics/start")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        long diagnosticId = objectMapper.readTree(startResponse).get("diagnosticId").asLong();
+        int answeredQuestions = 0;
+
+        for (JsonNode category : categories) {
+            for (JsonNode question : category.get("questions")) {
+                JsonNode selectedOption = question.get("options").get(question.get("options").size() - 1);
+
+                mockMvc.perform(post("/api/client/diagnostics/" + diagnosticId + "/reponses")
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                          "questionId": %d,
+                                          "optionReponseId": %d
+                                        }
+                                        """.formatted(question.get("id").asLong(), selectedOption.get("id").asLong())))
+                        .andExpect(status().isOk());
+                answeredQuestions++;
+            }
+        }
+
+        assertEquals(25, answeredQuestions);
+
+        String finalizeResponse = mockMvc.perform(post("/api/client/diagnostics/" + diagnosticId + "/finalize")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode result = objectMapper.readTree(finalizeResponse);
+        assertEquals("TERMINE", result.get("statut").asText());
+        assertEquals("EXCELLENT", result.get("niveauMaturite").asText());
+        assertEquals(5, result.get("scores").size());
+        assertTrue(result.get("scoreGlobal").asDouble() >= 99.0);
     }
 
     private String loginAndGetToken() throws Exception {

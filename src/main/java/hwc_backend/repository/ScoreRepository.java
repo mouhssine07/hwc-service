@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Long> {
     List<Score> findByDiagnosticId(Long diagnosticId);
+
+    void deleteByDiagnosticId(Long diagnosticId);
 }

@@ -8,4 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findByCategorieIdAndActifTrueOrderByOrdreAsc(Long categorieId);
+
+    long countByCategorieIdAndActifTrue(Long categorieId);
+
+    long countByActifTrue();
 }
