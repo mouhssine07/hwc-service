@@ -28,6 +28,8 @@ class AuthSecurityIntegrationTests {
 
     private static final String ADMIN_EMAIL = "admin@hwc.com";
     private static final String ADMIN_PASSWORD = "Admin@2026";
+    private static final String CLIENT_EMAIL = "client@hwc.com";
+    private static final String CLIENT_PASSWORD = "Client@2026";
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,6 +49,8 @@ class AuthSecurityIntegrationTests {
     void ensureAdminUser() {
         Role adminRole = roleRepository.findByNom("ROLE_ADMIN")
                 .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_ADMIN")));
+        Role clientRole = roleRepository.findByNom("ROLE_CLIENT")
+                .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_CLIENT")));
 
         User admin = userRepository.findByEmail(ADMIN_EMAIL).orElseGet(User::new);
         admin.setEmail(ADMIN_EMAIL);
@@ -56,6 +60,17 @@ class AuthSecurityIntegrationTests {
         admin.setActif(true);
         admin.setRoles(Set.of(adminRole));
         userRepository.save(admin);
+
+        User client = userRepository.findByEmail(CLIENT_EMAIL).orElseGet(User::new);
+        client.setEmail(CLIENT_EMAIL);
+        client.setPassword(passwordEncoder.encode(CLIENT_PASSWORD));
+        client.setNom("Client");
+        client.setPrenom("HWC");
+        client.setEntreprise("Harmony Works Consulting");
+        client.setSecteur("Conseil");
+        client.setActif(true);
+        client.setRoles(Set.of(clientRole));
+        userRepository.save(client);
     }
 
     @Test
@@ -149,6 +164,31 @@ class AuthSecurityIntegrationTests {
                 .andExpect(status().isCreated());
     }
 
+    @Test
+    void clientAuthEndpointsSupportClientFlowAndProtectClientRoutes() throws Exception {
+        mockMvc.perform(get("/api/client/auth/me"))
+                .andExpect(status().isUnauthorized());
+
+        String token = loginClientAndGetToken();
+
+        mockMvc.perform(get("/api/client/auth/me")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void adminCannotUseClientLoginEndpoint() throws Exception {
+        mockMvc.perform(post("/api/client/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "admin@hwc.com",
+                                  "password": "Admin@2026"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
     private String loginAndGetToken() throws Exception {
         String loginResponse = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,6 +196,24 @@ class AuthSecurityIntegrationTests {
                                 {
                                   "email": "admin@hwc.com",
                                   "password": "Admin@2026"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode json = objectMapper.readTree(loginResponse);
+        return json.get("token").asText();
+    }
+
+    private String loginClientAndGetToken() throws Exception {
+        String loginResponse = mockMvc.perform(post("/api/client/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "client@hwc.com",
+                                  "password": "Client@2026"
                                 }
                                 """))
                 .andExpect(status().isOk())

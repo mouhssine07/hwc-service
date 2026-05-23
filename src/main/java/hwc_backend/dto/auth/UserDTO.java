@@ -13,6 +13,10 @@ public class UserDTO {
     private String email;
     private String nom;
     private String prenom;
+    private String entreprise;
+    private String secteur;
+    private String tailleEntreprise;
+    private String telephone;
     private boolean actif;
     private Set<String> roles;
 }

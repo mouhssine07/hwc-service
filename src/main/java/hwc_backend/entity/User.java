@@ -41,6 +41,18 @@ public class User {
     @Column(nullable = false, length = 100)
     private String prenom;
 
+    @Column(length = 150)
+    private String entreprise;
+
+    @Column(length = 100)
+    private String secteur;
+
+    @Column(length = 50)
+    private String tailleEntreprise;
+
+    @Column(length = 20)
+    private String telephone;
+
     @Column(nullable = false)
     private boolean actif = true;
 
