@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Header from "./components/Header.jsx";
 import Hero from "./components/Hero.jsx";
@@ -43,6 +43,12 @@ import SousServicesPage from "./pages/admin/SousServicesPage.jsx";
 import TemoignagesPage from "./pages/admin/TemoignagesPage.jsx";
 import DashboardLayout from "./components/admin/layout/DashboardLayout.jsx";
 import ProtectedRoute from "./components/admin/layout/ProtectedRoute.jsx";
+import ClientLoginPage from "./pages/client/ClientLoginPage.jsx";
+import ClientRegisterPage from "./pages/client/ClientRegisterPage.jsx";
+import ClientProtectedRoute from "./pages/client/ClientProtectedRoute.jsx";
+import DiagnosticStartPage from "./pages/client/DiagnosticStartPage.jsx";
+import DiagnosticQuestionsPage from "./pages/client/DiagnosticQuestionsPage.jsx";
+import DiagnosticResultatPage from "./pages/client/DiagnosticResultatPage.jsx";
 
 function Home() {
   return (
@@ -58,7 +64,10 @@ function Home() {
 
 export default function App() {
   const location = useLocation();
-  const isStandaloneRoute = location.pathname.startsWith("/admin") || location.pathname === "/login";
+  const isStandaloneRoute =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/client") ||
+    location.pathname === "/login";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -87,6 +96,14 @@ export default function App() {
           <Route path="/hwc-method" element={<HwcMethod />} />
           <Route path="/methode-hwc-360" element={<HwcMethod />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/client/login" element={<ClientLoginPage />} />
+          <Route path="/client/register" element={<ClientRegisterPage />} />
+          <Route path="/client" element={<ClientProtectedRoute />}>
+            <Route index element={<Navigate to="/client/diagnostic" replace />} />
+            <Route path="diagnostic" element={<DiagnosticStartPage />} />
+            <Route path="diagnostic/:diagnosticId/questions" element={<DiagnosticQuestionsPage />} />
+            <Route path="diagnostic/:diagnosticId/resultat" element={<DiagnosticResultatPage />} />
+          </Route>
           <Route path="/admin" element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
