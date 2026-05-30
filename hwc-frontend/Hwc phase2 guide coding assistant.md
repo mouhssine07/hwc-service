@@ -26,7 +26,7 @@
 
 ---
 
-## Etat d'avancement reel au 23 mai 2026
+## Etat d'avancement reel au 30 mai 2026
 
 ### Terminé
 
@@ -130,17 +130,65 @@
   - étiquettes, fonctionnalités, avantages, étapes, FAQs, accompagnements
   - chiffres clés, témoignage, certification, client de confiance et pays
   - règles de recommandation reliées aux services/sous-services seedés
+- Module 5 Dashboard decisionnel client termine :
+  - endpoint client ajoute : `GET /api/client/dashboard`
+  - controleur ajoute : `DashboardClientController`
+  - service ajoute : `DashboardClientService` / `DashboardClientServiceImpl`
+  - DTOs dashboard ajoutes : `DashboardClientDTO`, `ScoreCategorieDTO`, `HistoriqueDiagnosticDTO`, `AlerteCritiqueDTO`, `RecommandationResumeDTO`
+  - consolidation backend basee sur les diagnostics finalises du client connecte
+  - donnees retournees : dernier diagnostic finalise, score global, niveau global, scores par categorie, historique, categories faibles, alertes critiques, recommandations principales, plan d'action resume, services HWC recommandes, nombre de diagnostics, date du dernier diagnostic, progression
+  - cas sans diagnostic finalise gere avec un dashboard vide et un message d'action
+  - score critique defini par categorie avec score inferieur ou egal a 40
+  - tests d'integration ajoutes dans `AuthSecurityIntegrationTests`
+  - librairie frontend `recharts` installee
+  - route frontend ajoutee : `/client/dashboard`
+  - page frontend ajoutee : `DashboardClientPage.jsx`
+  - composants frontend ajoutes : `ScoreGlobalDonut.jsx`, `KpiCards.jsx`, `RadarChartScores.jsx`, `HistoriqueBarChart.jsx`, `CategoryDetailCards.jsx`, `PlanActionTimeline.jsx`, `AlertesCritiques.jsx`, `ServicesRecommandes.jsx`, `BenchmarkSecteur.jsx`
+  - liens vers le dashboard ajoutes depuis `DiagnosticResultatPage.jsx`, `RecommandationsPage.jsx` et `DiagnosticStartPage.jsx`
+- Module 6 Generation de rapports PDF par IA termine :
+  - dependances backend ajoutees : `org.apache.pdfbox:pdfbox` et `jackson-databind`
+  - configuration OpenAI ajoutee sans secret en dur : `OPENAI_API_KEY`, `OPENAI_MODEL`, `OPENAI_RESPONSES_URL`
+  - endpoint client ajoute : `GET /api/client/diagnostics/{id}/pdf`
+  - endpoint client ajoute : `GET /api/client/rapports`
+  - endpoint client ajoute : `GET /api/client/rapports/{id}/download`
+  - entite ajoutee : `RapportPdf`
+  - repository ajoute : `RapportPdfRepository`
+  - DTOs rapport ajoutes : `RapportPdfDTO`, `RapportGenerationResult`
+  - services ajoutes : `OpenAIService`, `OpenAIServiceImpl`, `RapportService`, `RapportServiceImpl`
+  - controleur ajoute : `RapportController`
+  - generation PDF basee sur le diagnostic finalise, les scores, les recommandations et un contenu de rapport IA
+  - fallback local ajoute quand `OPENAI_API_KEY` est absente afin de garder les tests et la demo locale fonctionnels
+  - stockage du contenu PDF configure en `LONGBLOB` pour eviter les limites de taille MySQL
+  - nettoyage du texte PDF ajoute pour eviter les erreurs PDFBox sur accents, symboles, bullets et caracteres non supportes
+  - rendu PDF professionnalise :
+    - page de couverture HWC avec bandeau couleur
+    - bloc client / entreprise / diagnostic
+    - score global mis en avant
+    - resume executif
+    - cartes KPI
+    - tableau des scores par categorie
+    - analyse consultant structuree
+    - plan d'action priorise
+    - recommandations en blocs lisibles
+    - en-tete et pied de page
+  - suppression d'un diagnostic mise a jour pour supprimer aussi les rapports PDF associes
+  - tests d'integration ajoutes pour verifier la generation PDF et l'historique des rapports
+  - fichier frontend ajoute : `rapportApi.js`
+  - bouton de telechargement PDF ajoute dans `DiagnosticResultatPage.jsx`
+  - bouton PDF et historique des rapports ajoutes dans `DashboardClientPage.jsx`
 - Vérifications réussies :
-  - Backend : `./mvnw.cmd test` -> 31 tests OK
+  - Backend : `./mvnw.cmd test` -> 35 tests OK
   - Frontend : `npm run build` OK
+  - Note frontend : warning Vite sur la taille du bundle apres ajout de `recharts`
+  - Note npm : `npm install recharts` signale 1 vulnerabilite high severity a auditer separement
 
 ### À reprendre ensuite
 
-1. Tester manuellement le parcours client complet avec backend + frontend lancés localement
-2. Améliorer l'UX du questionnaire si nécessaire après test réel
-3. Tester manuellement la configuration des règles de recommandation depuis l'admin
-4. Améliorer l'affichage client des recommandations si nécessaire
-5. Démarrer le Module 5 : Dashboard décisionnel client
+1. Tester manuellement le dashboard client et la generation PDF avec backend + frontend lances localement
+2. Tester la generation PDF avec une vraie cle `OPENAI_API_KEY` dans l'environnement
+3. Auditer la vulnerabilite npm signalee apres installation de `recharts`
+4. Ajuster le contenu du prompt OpenAI si necessaire apres test avec vraie cle
+5. Demarrer le Module 7 : Assistant IA Chatbot RAG + Coach IA hebdomadaire apres validation du Module 6
 
 ### Notes de reprise
 
