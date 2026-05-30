@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, CheckCircle2, Target } from "lucide-react";
+import { ArrowLeft, CalendarDays, CheckCircle2, Gauge, Target } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
@@ -50,6 +50,10 @@ export default function RecommandationsPage() {
           >
             <ArrowLeft className="h-4 w-4" />
             Retour aux resultats
+          </button>
+          <button className="btn btn-outline-hero" type="button" onClick={() => navigate("/client/dashboard")}>
+            <Gauge className="mr-2 h-4 w-4" />
+            Dashboard
           </button>
         </div>
 

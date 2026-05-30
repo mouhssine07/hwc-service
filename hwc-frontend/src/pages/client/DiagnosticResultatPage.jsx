@@ -1,8 +1,9 @@
-import { ArrowLeft, BarChart3, ListChecks, RefreshCcw, Trophy } from "lucide-react";
+import { ArrowLeft, BarChart3, Download, Gauge, ListChecks, RefreshCcw, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { getDiagnostic } from "../../api/diagnosticApi.js";
+import { downloadDiagnosticReport, savePdfBlob } from "../../api/rapportApi.js";
 
 const levelTone = {
   CRITIQUE: "text-red-600 bg-red-50 border-red-200",
@@ -16,12 +17,26 @@ export default function DiagnosticResultatPage() {
   const { diagnosticId } = useParams();
   const navigate = useNavigate();
   const [diagnostic, setDiagnostic] = useState(null);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     getDiagnostic(diagnosticId)
       .then(setDiagnostic)
       .catch(() => toast.error("Impossible de charger le resultat"));
   }, [diagnosticId]);
+
+  const handleDownloadReport = async () => {
+    setDownloading(true);
+    try {
+      const blob = await downloadDiagnosticReport(diagnosticId);
+      savePdfBlob(blob, `rapport-hwc-diagnostic-${diagnosticId}.pdf`);
+      toast.success("Rapport PDF genere.");
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   if (!diagnostic) {
     return (
@@ -80,6 +95,23 @@ export default function DiagnosticResultatPage() {
             >
               <ListChecks className="mr-2 h-4 w-4" />
               Voir mes recommandations
+            </button>
+            <button
+              className="btn btn-outline-hero mt-3 w-full"
+              type="button"
+              onClick={() => navigate("/client/dashboard")}
+            >
+              <Gauge className="mr-2 h-4 w-4" />
+              Ouvrir le dashboard
+            </button>
+            <button
+              className="btn btn-outline-hero mt-3 w-full"
+              type="button"
+              disabled={downloading}
+              onClick={handleDownloadReport}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {downloading ? "Generation..." : "Telecharger le rapport PDF"}
             </button>
           </div>
 

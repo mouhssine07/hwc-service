@@ -1,4 +1,4 @@
-import { ArrowRight, ClipboardList, History, Loader2, LogOut, Trash2 } from "lucide-react";
+import { ArrowRight, ClipboardList, Gauge, History, Loader2, LogOut, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -103,6 +103,10 @@ export default function DiagnosticStartPage() {
             {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
             Lancer le diagnostic
             {!loading ? <ArrowRight className="ml-2 h-5 w-5" /> : null}
+          </button>
+          <button className="btn btn-outline-hero ml-0 mt-3 h-12 text-base sm:ml-3" type="button" onClick={() => navigate("/client/dashboard")}>
+            <Gauge className="mr-2 h-5 w-5" />
+            Voir le dashboard
           </button>
         </div>
 

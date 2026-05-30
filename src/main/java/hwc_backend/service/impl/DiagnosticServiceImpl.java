@@ -19,6 +19,7 @@ import hwc_backend.repository.CategorieDiagnosticRepository;
 import hwc_backend.repository.DiagnosticRepository;
 import hwc_backend.repository.OptionReponseRepository;
 import hwc_backend.repository.QuestionRepository;
+import hwc_backend.repository.RapportPdfRepository;
 import hwc_backend.repository.ReponseDiagnosticRepository;
 import hwc_backend.repository.RecommandationRepository;
 import hwc_backend.repository.ScoreRepository;
@@ -45,6 +46,7 @@ public class DiagnosticServiceImpl implements DiagnosticService {
     private final OptionReponseRepository optionReponseRepository;
     private final ReponseDiagnosticRepository reponseDiagnosticRepository;
     private final RecommandationRepository recommandationRepository;
+    private final RapportPdfRepository rapportPdfRepository;
     private final ScoreRepository scoreRepository;
     private final ScoringService scoringService;
     private final RecommandationService recommandationService;
@@ -146,6 +148,7 @@ public class DiagnosticServiceImpl implements DiagnosticService {
     @Transactional
     public void delete(Long diagnosticId, String email) {
         Diagnostic diagnostic = findOwnedDiagnostic(diagnosticId, email);
+        rapportPdfRepository.deleteByDiagnosticId(diagnosticId);
         recommandationRepository.deleteByDiagnosticId(diagnosticId);
         reponseDiagnosticRepository.deleteByDiagnosticId(diagnosticId);
         scoreRepository.deleteByDiagnosticId(diagnosticId);

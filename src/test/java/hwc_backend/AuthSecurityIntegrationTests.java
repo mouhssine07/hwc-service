@@ -175,11 +175,28 @@ class AuthSecurityIntegrationTests {
         mockMvc.perform(get("/api/client/auth/me"))
                 .andExpect(status().isUnauthorized());
 
+        mockMvc.perform(get("/api/client/dashboard"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(get("/api/client/rapports"))
+                .andExpect(status().isUnauthorized());
+
         String token = loginClientAndGetToken();
 
         mockMvc.perform(get("/api/client/auth/me")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
+
+        String dashboardResponse = mockMvc.perform(get("/api/client/dashboard")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode dashboard = objectMapper.readTree(dashboardResponse);
+        assertTrue(dashboard.has("disponible"));
+        assertTrue(dashboard.has("nombreDiagnostics"));
     }
 
     @Test
@@ -251,6 +268,38 @@ class AuthSecurityIntegrationTests {
         assertEquals("EXCELLENT", result.get("niveauMaturite").asText());
         assertEquals(5, result.get("scores").size());
         assertTrue(result.get("scoreGlobal").asDouble() >= 99.0);
+
+        String dashboardResponse = mockMvc.perform(get("/api/client/dashboard")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode dashboard = objectMapper.readTree(dashboardResponse);
+        assertTrue(dashboard.get("disponible").asBoolean());
+        assertEquals(diagnosticId, dashboard.get("dernierDiagnosticId").asLong());
+        assertEquals(5, dashboard.get("scoresParCategorie").size());
+        assertTrue(dashboard.get("nombreDiagnostics").asInt() >= 1);
+
+        byte[] pdfResponse = mockMvc.perform(get("/api/client/diagnostics/" + diagnosticId + "/pdf")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsByteArray();
+
+        assertTrue(new String(pdfResponse, 0, 4).startsWith("%PDF"));
+
+        String rapportsResponse = mockMvc.perform(get("/api/client/rapports")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode rapports = objectMapper.readTree(rapportsResponse);
+        assertTrue(rapports.size() >= 1);
 
         mockMvc.perform(delete("/api/client/diagnostics/" + diagnosticId)
                         .header("Authorization", "Bearer " + token))
