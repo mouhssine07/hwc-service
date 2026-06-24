@@ -181,6 +181,9 @@ class AuthSecurityIntegrationTests {
         mockMvc.perform(get("/api/client/rapports"))
                 .andExpect(status().isUnauthorized());
 
+        mockMvc.perform(get("/api/client/chat/conversations"))
+                .andExpect(status().isUnauthorized());
+
         String token = loginClientAndGetToken();
 
         mockMvc.perform(get("/api/client/auth/me")
@@ -197,6 +200,27 @@ class AuthSecurityIntegrationTests {
         JsonNode dashboard = objectMapper.readTree(dashboardResponse);
         assertTrue(dashboard.has("disponible"));
         assertTrue(dashboard.has("nombreDiagnostics"));
+
+        String chatResponse = mockMvc.perform(post("/api/client/chat/message")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "message": "Quels sont mes axes prioritaires ?"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode chat = objectMapper.readTree(chatResponse);
+        assertTrue(chat.has("conversationId"));
+        assertEquals("assistant", chat.get("role").asText());
+
+        mockMvc.perform(get("/api/client/chat/conversations/" + chat.get("conversationId").asLong() + "/messages")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
     }
 
     @Test

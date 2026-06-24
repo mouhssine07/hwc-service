@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { getCurrentClient } from "../../api/clientAuthApi.js";
+import ChatbotButton from "../../components/chat/ChatbotButton.jsx";
 import useClientAuthStore from "../../store/clientAuthStore.js";
 
 export default function ClientProtectedRoute() {
@@ -29,5 +30,10 @@ export default function ClientProtectedRoute() {
     return <Navigate to="/client/login" replace state={{ from: location }} />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <ChatbotButton />
+    </>
+  );
 }

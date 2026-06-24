@@ -176,6 +176,36 @@
   - fichier frontend ajoute : `rapportApi.js`
   - bouton de telechargement PDF ajoute dans `DiagnosticResultatPage.jsx`
   - bouton PDF et historique des rapports ajoutes dans `DashboardClientPage.jsx`
+- Module 7A Chatbot IA avec Ollama local termine :
+  - entites ajoutees : `ChatConversation`, `ChatMessage`
+  - repositories ajoutes : `ChatConversationRepository`, `ChatMessageRepository`
+  - DTOs chat ajoutes : `ChatMessageRequestDTO`, `ChatMessageDTO`, `ChatConversationDTO`, `ChatMessageResponseDTO`
+  - service ajoute : `ChatService` / `ChatServiceImpl`
+  - controleur ajoute : `ChatController`
+  - endpoints client ajoutes :
+    - `POST /api/client/chat/message`
+    - `GET /api/client/chat/conversations`
+    - `GET /api/client/chat/conversations/{id}/messages`
+  - integration Ollama locale ajoutee :
+    - `OLLAMA_BASE_URL`
+    - `OLLAMA_MODEL`
+    - modele par defaut : `llama3.2:latest`
+  - contexte RAG applicatif base sur le client connecte, le diagnostic, les scores et les recommandations
+  - protection prompt ajoutee contre l'invention de scores et le melange entre clients/diagnostics
+  - format de reponse structure force pour eviter les longs paragraphes
+  - memoire conversationnelle sauvegardee en base
+  - reprise automatique de la derniere conversation apres fermeture/reouverture du chatbot
+  - limitation configurable de la memoire envoyee au LLM avec `CHAT_MEMORY_MAX_MESSAGES`
+  - retention configurable des anciennes conversations avec `CHAT_RETENTION_DAYS`
+  - nettoyage automatique via `ChatCleanupScheduler`
+  - frontend ajoute :
+    - `chatApi.js`
+    - `ChatbotButton.jsx`
+    - `ChatbotWindow.jsx`
+    - `ChatMessage.jsx`
+    - `ChatInput.jsx`
+    - `ChatSuggestions.jsx`
+  - bouton Assistant IA integre dans les routes client protegees
 - Vérifications réussies :
   - Backend : `./mvnw.cmd test` -> 35 tests OK
   - Frontend : `npm run build` OK
@@ -184,11 +214,11 @@
 
 ### À reprendre ensuite
 
-1. Tester manuellement le dashboard client et la generation PDF avec backend + frontend lances localement
-2. Tester la generation PDF avec une vraie cle `OPENAI_API_KEY` dans l'environnement
-3. Auditer la vulnerabilite npm signalee apres installation de `recharts`
-4. Ajuster le contenu du prompt OpenAI si necessaire apres test avec vraie cle
-5. Demarrer le Module 7 : Assistant IA Chatbot RAG + Coach IA hebdomadaire apres validation du Module 6
+1. Tester manuellement le chatbot IA avec backend, frontend et Ollama lances localement
+2. Auditer la vulnerabilite npm signalee apres installation de `recharts`
+3. Optimiser le bundle frontend si necessaire apres ajout de `recharts`
+4. Demarrer le Module 7B : Coach IA hebdomadaire
+5. Preparer la configuration email pour les rappels lundi/vendredi du coach
 
 ### Notes de reprise
 
@@ -1593,8 +1623,8 @@ Semaine 5 :
   🔄 Tester la génération de PDF avec vraies données
 
 Semaine 6 :
-  🔄 Module 7A Backend : `ChatService` (RAG)
-  🔄 Module 7A Frontend : `ChatbotButton` + `ChatbotWindow`
+  ✅ Module 7A Backend : `ChatService` (RAG)
+  ✅ Module 7A Frontend : `ChatbotButton` + `ChatbotWindow`
   🔄 Module 7B Backend : `CoachIAService` + `CoachIAScheduler`
   🔄 Module 7B Frontend : `CoachIAPage`
 

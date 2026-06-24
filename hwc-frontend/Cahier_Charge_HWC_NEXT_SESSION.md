@@ -45,6 +45,17 @@ git push origin feature/new-functionality
   - clients/pays;
   - regles de recommandation.
 - Navigation admin avec affichage type accordions pour les sous-elements.
+- Module 5 dashboard decisionnel client.
+- Module 6 generation de rapports PDF par IA avec fallback local.
+- Module 7A Chatbot IA avec Ollama local:
+  - conversations et messages sauvegardes en base;
+  - endpoints `/api/client/chat/message`, `/api/client/chat/conversations`, `/api/client/chat/conversations/{id}/messages`;
+  - contexte client base sur le diagnostic, les scores et les recommandations;
+  - protection contre le melange des clients et diagnostics;
+  - reponses forcees en format structure et lisible;
+  - reprise de la derniere conversation apres fermeture/reouverture de la fenetre;
+  - limitation de la memoire envoyee au LLM;
+  - nettoyage automatique des conversations anciennes.
 
 ## Tests deja valides
 
@@ -61,8 +72,67 @@ Dernier resultat connu:
 - Backend: tests OK.
 - Frontend: build OK.
 - Fonctionnalites precedentes testees manuellement par le client/utilisateur.
+- Derniere verification Module 7A:
+  - Backend: `.\mvnw.cmd test` -> 35 tests OK.
+  - Frontend: `npm.cmd run build` -> OK.
 
 ## Prochaine etape recommandee
+
+### Module 7B - Coach IA hebdomadaire
+
+Objectif: ajouter un coach client qui transforme le diagnostic et les recommandations en objectifs hebdomadaires suivis.
+
+Routes cibles:
+
+- Frontend: `/client/coach`
+- Backend:
+  - `GET /api/client/coach/current-week`
+  - `PATCH /api/client/coach/objectifs/{id}/complete`
+  - `GET /api/client/coach/history`
+
+## Backend a implementer
+
+Fichiers probables:
+
+- `src/main/java/hwc_backend/entity/CoachObjectifsHebdo.java`
+- `src/main/java/hwc_backend/entity/CoachObjectifResultat.java`
+- `src/main/java/hwc_backend/entity/CoachEmailEnvoye.java`
+- `src/main/java/hwc_backend/repository/CoachObjectifsHebdoRepository.java`
+- `src/main/java/hwc_backend/repository/CoachObjectifResultatRepository.java`
+- `src/main/java/hwc_backend/repository/CoachEmailEnvoyeRepository.java`
+- `src/main/java/hwc_backend/service/CoachIAService.java`
+- `src/main/java/hwc_backend/service/impl/CoachIAServiceImpl.java`
+- `src/main/java/hwc_backend/controller/CoachIAController.java`
+- `src/main/java/hwc_backend/scheduler/CoachIAScheduler.java`
+
+Regles metier proposees:
+
+- generer 3 objectifs hebdomadaires depuis le dernier diagnostic finalise;
+- utiliser Ollama local par defaut, comme le chatbot;
+- sauvegarder les objectifs pour eviter de regenerer a chaque affichage;
+- permettre au client de marquer un objectif comme fait;
+- garder un historique des semaines;
+- preparer l'envoi email lundi/vendredi, mais permettre un fallback sans SMTP.
+
+## Frontend a implementer
+
+Fichiers probables:
+
+- `hwc-frontend/src/api/coachApi.js`
+- `hwc-frontend/src/pages/client/CoachIAPage.jsx`
+- `hwc-frontend/src/components/coach/ObjectifCard.jsx`
+- `hwc-frontend/src/components/coach/WeekProgress.jsx`
+- `hwc-frontend/src/components/coach/CoachHistory.jsx`
+
+Interface attendue:
+
+- page SaaS compacte, pas une landing page;
+- objectifs de la semaine visibles en premier;
+- progression claire;
+- historique des semaines precedentes;
+- bouton pour ouvrir l'Assistant IA existant.
+
+## Ancienne prochaine etape - deja terminee
 
 ### Module 5 - Dashboard decisionnel client
 
@@ -80,7 +150,7 @@ Liens a ajouter:
 - Depuis la page de demarrage/historique diagnostic.
 - Eventuellement depuis le bouton diagnostic du site vitrine apres connexion.
 
-## Backend a implementer
+## Backend deja implemente
 
 Creer une API dashboard client qui retourne une vue consolidee basee sur les diagnostics du client connecte.
 
@@ -124,7 +194,7 @@ Tests backend a ajouter/adapter:
 - Rejet si non connecte.
 - Isolation: un client ne voit pas les donnees d'un autre client.
 
-## Frontend a implementer
+## Frontend deja implemente
 
 Verifier d'abord les dependances. Si `recharts` n'existe pas dans `package.json`, l'installer:
 
@@ -201,7 +271,7 @@ git commit -m "feat: add client dashboard"
 git push origin feature/new-functionality
 ```
 
-## Etape suivante apres le dashboard
+## Etape suivante apres le dashboard - deja terminee
 
 Apres validation du Module 5, passer au Module 6:
 
@@ -210,4 +280,4 @@ Apres validation du Module 5, passer au Module 6:
 - integration OpenAI uniquement via variable d'environnement;
 - historique des rapports.
 
-Ne pas commencer le Module 6 avant que le dashboard client soit teste et valide.
+Module 6 est maintenant termine. La prochaine etape reelle est le Module 7B Coach IA hebdomadaire.
