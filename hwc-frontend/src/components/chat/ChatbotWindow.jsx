@@ -9,7 +9,7 @@ import ChatSuggestions from "./ChatSuggestions.jsx";
 
 const ACTIVE_CONVERSATION_KEY = "hwc-active-chat-conversation-id";
 
-export default function ChatbotWindow({ onClose }) {
+export default function ChatbotWindow({ onClose, coachObjective = null, initialDiagnosticId = null, focused = false }) {
   const [conversationId, setConversationId] = useState(null);
   const [diagnosticId, setDiagnosticId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -31,15 +31,18 @@ export default function ChatbotWindow({ onClose }) {
           setDiagnosticId(dashboard.dernierDiagnosticId);
         }
 
-        const storedConversationId = Number(window.localStorage.getItem(ACTIVE_CONVERSATION_KEY));
+        const storageKey = coachObjective ? `${ACTIVE_CONVERSATION_KEY}-objective-${coachObjective.id}` : ACTIVE_CONVERSATION_KEY;
+        const storedConversationId = Number(window.localStorage.getItem(storageKey));
         const activeConversation =
-          conversations.find((conversation) => conversation.id === storedConversationId) ?? conversations[0];
+          conversations.find((conversation) => conversation.id === storedConversationId) ?? (coachObjective ? null : conversations[0]);
 
         if (activeConversation) {
           setConversationId(activeConversation.id);
           setDiagnosticId(activeConversation.diagnosticId ?? dashboard?.dernierDiagnosticId ?? null);
           window.localStorage.setItem(ACTIVE_CONVERSATION_KEY, String(activeConversation.id));
           setMessages(await listChatMessages(activeConversation.id));
+        } else if (initialDiagnosticId) {
+          setDiagnosticId(initialDiagnosticId);
         }
       } catch {
         if (mounted) {
@@ -57,7 +60,7 @@ export default function ChatbotWindow({ onClose }) {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [coachObjective, initialDiagnosticId]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -77,10 +80,12 @@ export default function ChatbotWindow({ onClose }) {
       const response = await sendChatMessage({
         conversationId,
         diagnosticId: conversationId ? null : diagnosticId,
+        coachObjectifId: coachObjective?.id ?? null,
         message: content,
       });
       setConversationId(response.conversationId);
       window.localStorage.setItem(ACTIVE_CONVERSATION_KEY, String(response.conversationId));
+      if (coachObjective) window.localStorage.setItem(`${ACTIVE_CONVERSATION_KEY}-objective-${coachObjective.id}`, String(response.conversationId));
       const serverMessages = await listChatMessages(response.conversationId);
       setMessages(serverMessages);
     } catch {
@@ -92,13 +97,13 @@ export default function ChatbotWindow({ onClose }) {
   };
 
   return (
-    <section className="fixed bottom-24 right-4 z-50 flex h-[min(620px,calc(100vh-7rem))] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-lg border border-border bg-card shadow-elevated">
+    <section className={focused ? "fixed inset-3 z-[70] flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-elevated md:inset-y-8 md:left-auto md:right-8 md:w-[min(560px,calc(100vw-4rem))]" : "fixed bottom-24 right-4 z-50 flex h-[min(620px,calc(100vh-7rem))] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-lg border border-border bg-card shadow-elevated"}>
       <header className="flex h-14 items-center justify-between border-b border-border bg-primary px-4 text-primary-foreground">
         <div className="flex min-w-0 items-center gap-2">
           <MessageSquare className="h-5 w-5 shrink-0" />
           <div className="min-w-0">
-            <h2 className="truncate text-sm font-bold">Assistant HWC</h2>
-            <p className="truncate text-xs text-primary-foreground/80">Analyse diagnostic avec Ollama local</p>
+            <h2 className="truncate text-sm font-bold">{coachObjective ? "Coach IA — suivi de l'objectif" : "Assistant HWC"}</h2>
+            <p className="truncate text-xs text-primary-foreground/80">{coachObjective?.titre ?? "Analyse diagnostic avec Ollama local"}</p>
           </div>
         </div>
         <button
@@ -121,9 +126,11 @@ export default function ChatbotWindow({ onClose }) {
 
         {!loadingHistory && !messages.length ? (
           <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
-            <h3 className="text-sm font-bold text-foreground">Comment puis-je vous aider ?</h3>
+            <h3 className="text-sm font-bold text-foreground">{coachObjective ? "Commençons cette étape ensemble" : "Comment puis-je vous aider ?"}</h3>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              {diagnosticId
+              {coachObjective
+                ? `Je vais vous accompagner pas à pas pour : ${coachObjective.titre}. Décrivez-moi d'abord votre situation actuelle.`
+                : diagnosticId
                 ? `Je peux expliquer le diagnostic #${diagnosticId}, ses scores et ses recommandations HWC.`
                 : "Je peux vous guider apres un diagnostic finalise."}
             </p>

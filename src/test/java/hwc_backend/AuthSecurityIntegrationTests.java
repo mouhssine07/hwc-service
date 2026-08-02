@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -305,6 +306,40 @@ class AuthSecurityIntegrationTests {
         assertEquals(diagnosticId, dashboard.get("dernierDiagnosticId").asLong());
         assertEquals(5, dashboard.get("scoresParCategorie").size());
         assertTrue(dashboard.get("nombreDiagnostics").asInt() >= 1);
+
+        String coachResponse = mockMvc.perform(get("/api/client/coach/current-week")
+                        .param("diagnosticId", String.valueOf(diagnosticId))
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode coachWeek = objectMapper.readTree(coachResponse);
+        assertTrue(coachWeek.get("disponible").asBoolean());
+        assertEquals(diagnosticId, coachWeek.get("diagnosticId").asLong());
+        assertEquals(3, coachWeek.get("objectifs").size());
+        assertEquals(1, coachWeek.get("numeroSemaine").asInt());
+        assertEquals(12, coachWeek.get("dureeProgrammeSemaines").asInt());
+
+        long objectiveId = coachWeek.get("objectifs").get(0).get("id").asLong();
+        String progressResponse = mockMvc.perform(patch("/api/client/coach/objectifs/" + objectiveId + "/progress")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "quantiteRealisee": 1,
+                                  "commentaire": "Action realisee et verifiee pendant le test"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode updatedCoachWeek = objectMapper.readTree(progressResponse);
+        assertEquals(1, updatedCoachWeek.get("objectifs").get(0).get("quantiteRealisee").asInt());
+        assertTrue(updatedCoachWeek.get("objectifs").get(0).get("termine").asBoolean());
 
         byte[] pdfResponse = mockMvc.perform(get("/api/client/diagnostics/" + diagnosticId + "/pdf")
                         .header("Authorization", "Bearer " + token))

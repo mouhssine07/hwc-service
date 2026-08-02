@@ -13,7 +13,7 @@ export default function RadarChartScores({ scores }) {
         <p className="text-sm text-muted-foreground">Lecture comparative des categories</p>
       </div>
       <div className="h-72 min-w-0">
-        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1} initialDimension={{ width: 560, height: 288 }}>
           <RadarChart data={data}>
             <PolarGrid stroke="#e5e7eb" />
             <PolarAngleAxis dataKey="categorie" tick={{ fontSize: 11, fill: "#64748b" }} />

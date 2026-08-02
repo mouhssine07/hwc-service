@@ -13,6 +13,7 @@ public class ChatMessageRequestDTO {
 
     private Long conversationId;
     private Long diagnosticId;
+    private Long coachObjectifId;
 
     @NotBlank
     @Size(max = 2000)

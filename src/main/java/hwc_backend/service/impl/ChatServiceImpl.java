@@ -8,6 +8,7 @@ import hwc_backend.dto.chat.ChatMessageRequestDTO;
 import hwc_backend.dto.chat.ChatMessageResponseDTO;
 import hwc_backend.entity.ChatConversation;
 import hwc_backend.entity.ChatMessage;
+import hwc_backend.entity.CoachObjectifResultat;
 import hwc_backend.entity.Diagnostic;
 import hwc_backend.entity.DiagnosticStatut;
 import hwc_backend.entity.Recommandation;
@@ -15,6 +16,7 @@ import hwc_backend.entity.Score;
 import hwc_backend.entity.User;
 import hwc_backend.repository.ChatConversationRepository;
 import hwc_backend.repository.ChatMessageRepository;
+import hwc_backend.repository.CoachObjectifResultatRepository;
 import hwc_backend.repository.DiagnosticRepository;
 import hwc_backend.repository.RecommandationRepository;
 import hwc_backend.repository.ScoreRepository;
@@ -46,6 +48,7 @@ public class ChatServiceImpl implements ChatService {
     private final RecommandationRepository recommandationRepository;
     private final ChatConversationRepository chatConversationRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final CoachObjectifResultatRepository coachObjectifResultatRepository;
 
     @Value("${ollama.base-url:http://localhost:11434}")
     private String ollamaBaseUrl;
@@ -69,7 +72,8 @@ public class ChatServiceImpl implements ChatService {
         chatMessageRepository.save(userMessage);
 
         List<ChatMessage> history = chatMessageRepository.findByConversationIdOrderByDateEnvoiAsc(conversation.getId());
-        String answer = generateAnswer(user, conversation, history);
+        CoachObjectifResultat coachObjectif = resolveOwnedCoachObjectif(request.getCoachObjectifId(), user);
+        String answer = generateAnswer(user, conversation, history, coachObjectif);
 
         ChatMessage assistantMessage = new ChatMessage();
         assistantMessage.setConversation(conversation);
@@ -132,8 +136,8 @@ public class ChatServiceImpl implements ChatService {
         return chatConversationRepository.save(conversation);
     }
 
-    private String generateAnswer(User user, ChatConversation conversation, List<ChatMessage> history) {
-        String systemPrompt = buildSystemPrompt(user, conversation.getDiagnosticId());
+    private String generateAnswer(User user, ChatConversation conversation, List<ChatMessage> history, CoachObjectifResultat coachObjectif) {
+        String systemPrompt = buildSystemPrompt(user, conversation.getDiagnosticId(), coachObjectif);
         try {
             return callOllama(systemPrompt, history);
         } catch (RuntimeException exception) {
@@ -185,7 +189,7 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private String buildSystemPrompt(User user, Long diagnosticId) {
+    private String buildSystemPrompt(User user, Long diagnosticId, CoachObjectifResultat coachObjectif) {
         return """
                 Tu es l'assistant consultant de Harmony Works Consulting pour UN SEUL client connecte.
 
@@ -236,7 +240,30 @@ public class ChatServiceImpl implements ChatService {
 
                 CONTEXTE DIAGNOSTIC
                 %s
-                """.formatted(buildUserContext(user), buildDiagnosticContext(user, diagnosticId));
+
+                OBJECTIF COACH ACTUEL
+                %s
+
+                Pour cet echange, concentre-toi exclusivement sur cet objectif. Guide le client pas a pas, pose une seule question a la fois et propose des livrables concrets. Ne declare jamais une action terminee sans confirmation explicite du client.
+                """.formatted(buildUserContext(user), buildDiagnosticContext(user, diagnosticId), buildCoachObjectifContext(coachObjectif));
+    }
+
+    private String buildCoachObjectifContext(CoachObjectifResultat objectif) {
+        if (objectif == null) return "Aucun objectif Coach specifique.";
+        return "- Titre: %s\n- Description: %s\n- Indicateur: %s\n- Progression declaree: %s/%s %s\n- Commentaire client: %s"
+                .formatted(valueOrDash(objectif.getTitre()), valueOrDash(objectif.getDescription()),
+                        valueOrDash(objectif.getIndicateur()), objectif.getQuantiteRealisee(), objectif.getQuantiteCible(),
+                        valueOrDash(objectif.getUnite()), valueOrDash(objectif.getCommentaireClient()));
+    }
+
+    private CoachObjectifResultat resolveOwnedCoachObjectif(Long objectifId, User user) {
+        if (objectifId == null) return null;
+        CoachObjectifResultat objectif = coachObjectifResultatRepository.findById(objectifId)
+                .orElseThrow(() -> new EntityNotFoundException("Coach objective not found"));
+        if (!objectif.getObjectifsHebdo().getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Coach objective does not belong to authenticated user");
+        }
+        return objectif;
     }
 
     private String buildUserContext(User user) {

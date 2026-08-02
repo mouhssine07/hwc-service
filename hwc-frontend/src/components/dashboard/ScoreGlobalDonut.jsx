@@ -13,7 +13,7 @@ export default function ScoreGlobalDonut({ score, niveau }) {
     <section className="rounded-lg border border-border bg-card p-6 shadow-card">
       <div className="grid gap-5 sm:grid-cols-[190px_1fr] sm:items-center">
         <div className="relative h-44 min-w-0">
-          <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+          <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1} initialDimension={{ width: 190, height: 176 }}>
             <PieChart>
               <Pie data={data} dataKey="value" innerRadius={58} outerRadius={78} startAngle={90} endAngle={-270}>
                 {data.map((entry, index) => (

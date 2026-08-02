@@ -1,9 +1,10 @@
 import clientApi from "./clientAxiosInstance.js";
 
-export async function sendChatMessage({ conversationId, diagnosticId, message }) {
+export async function sendChatMessage({ conversationId, diagnosticId, coachObjectifId, message }) {
   const response = await clientApi.post("/client/chat/message", {
     conversationId,
     diagnosticId,
+    coachObjectifId,
     message,
   });
   return response.data;

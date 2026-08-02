@@ -1,6 +1,8 @@
 package hwc_backend.service.impl;
 
 import hwc_backend.dto.dashboard.AlerteCritiqueDTO;
+import hwc_backend.dto.dashboard.BenchmarkSecteurDTO;
+import hwc_backend.dto.dashboard.ConcurrentSecteurDTO;
 import hwc_backend.dto.dashboard.DashboardClientDTO;
 import hwc_backend.dto.dashboard.HistoriqueDiagnosticDTO;
 import hwc_backend.dto.dashboard.RecommandationResumeDTO;
@@ -18,6 +20,8 @@ import hwc_backend.service.DashboardClientService;
 import hwc_backend.service.ScoringService;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DashboardClientServiceImpl implements DashboardClientService {
 
     private static final BigDecimal SCORE_CRITIQUE = new BigDecimal("40.00");
+    private static final int ECHANTILLON_MINIMUM_BENCHMARK = 10;
 
     private final UserRepository userRepository;
     private final DiagnosticRepository diagnosticRepository;
@@ -62,6 +67,7 @@ public class DashboardClientServiceImpl implements DashboardClientService {
                     List.of(),
                     List.of(),
                     0,
+                    null,
                     null,
                     null
             );
@@ -98,8 +104,89 @@ public class DashboardClientServiceImpl implements DashboardClientService {
                         .toList(),
                 diagnostics.size(),
                 dernierDiagnostic.getDateFin(),
-                calculerProgression(diagnostics)
+                calculerProgression(diagnostics),
+                calculerBenchmarkSecteur(user, dernierDiagnostic)
         );
+    }
+
+    private BenchmarkSecteurDTO calculerBenchmarkSecteur(User client, Diagnostic diagnosticClient) {
+        String secteur = client.getSecteur() == null ? "" : client.getSecteur().trim();
+        if (secteur.isBlank()) {
+            return new BenchmarkSecteurDTO(
+                    false,
+                    "Renseignez votre secteur d'activite pour activer la comparaison.",
+                    null,
+                    client.getPrenom(),
+                    diagnosticClient.getScoreGlobal(),
+                    null,
+                    null,
+                    0,
+                    null,
+                    List.of()
+            );
+        }
+
+        List<ScoreEntreprise> entreprisesSecteur = new ArrayList<>();
+        userRepository.findByActifTrueAndSecteurIgnoreCase(secteur).forEach(user ->
+                diagnosticRepository.findByUserIdAndStatutOrderByDateDebutDesc(user.getId(), DiagnosticStatut.TERMINE)
+                        .stream()
+                        .max(Comparator.comparing(this::diagnosticSortDate))
+                        .map(Diagnostic::getScoreGlobal)
+                        .filter(score -> score != null)
+                        .ifPresent(score -> entreprisesSecteur.add(new ScoreEntreprise(user.getId(), score)))
+        );
+        List<BigDecimal> scoresSecteur = entreprisesSecteur.stream().map(ScoreEntreprise::score).toList();
+
+        if (scoresSecteur.size() < ECHANTILLON_MINIMUM_BENCHMARK) {
+            return new BenchmarkSecteurDTO(
+                    false,
+                    "Comparaison indisponible : au moins 10 entreprises du meme secteur sont necessaires.",
+                    secteur,
+                    client.getPrenom(),
+                    diagnosticClient.getScoreGlobal(),
+                    null,
+                    null,
+                    scoresSecteur.size(),
+                    null,
+                    List.of()
+            );
+        }
+
+        List<BigDecimal> scoresTries = scoresSecteur.stream().sorted().toList();
+        BigDecimal moyenne = scoresTries.stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(BigDecimal.valueOf(scoresTries.size()), 2, RoundingMode.HALF_UP);
+        int indexPercentile90 = Math.max(0, (int) Math.ceil(scoresTries.size() * 0.90) - 1);
+        BigDecimal topDixPourcent = scoresTries.get(indexPercentile90).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal scoreClient = diagnosticClient.getScoreGlobal();
+        int positionClient = (int) scoresTries.stream().filter(score -> score.compareTo(scoreClient) > 0).count() + 1;
+        List<ConcurrentSecteurDTO> concurrentsDevant = entreprisesSecteur.stream()
+                .filter(entreprise -> !entreprise.userId().equals(client.getId()))
+                .filter(entreprise -> entreprise.score().compareTo(scoreClient) > 0)
+                .sorted(Comparator.comparing(ScoreEntreprise::score).reversed())
+                .limit(3)
+                .map(entreprise -> new ConcurrentSecteurDTO(
+                        "Entreprise anonymisee",
+                        entreprise.score().setScale(2, RoundingMode.HALF_UP),
+                        entreprise.score().subtract(scoreClient).setScale(2, RoundingMode.HALF_UP)
+                ))
+                .toList();
+
+        return new BenchmarkSecteurDTO(
+                true,
+                "Comparaison calculee sur les derniers diagnostics finalises de clients actifs HWC.",
+                secteur,
+                client.getPrenom(),
+                scoreClient,
+                moyenne,
+                topDixPourcent,
+                scoresTries.size(),
+                positionClient,
+                concurrentsDevant
+        );
+    }
+
+    private record ScoreEntreprise(Long userId, BigDecimal score) {
     }
 
     private java.util.function.Predicate<RecommandationResumeDTO> distinctByService() {

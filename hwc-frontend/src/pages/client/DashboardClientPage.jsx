@@ -130,14 +130,15 @@ export default function DashboardClientPage() {
           <CategoryDetailCards scores={dashboard.scoresParCategorie} />
           <div className="space-y-5">
             <AlertesCritiques alertes={dashboard.alertesCritiques} />
-            <BenchmarkSecteur score={dashboard.scoreGlobal} />
+            <BenchmarkSecteur benchmark={dashboard.benchmarkSecteur} score={dashboard.scoreGlobal} />
           </div>
         </section>
 
-        <section className="grid gap-5 xl:grid-cols-[1.3fr_0.7fr]">
+        <section>
           <PlanActionTimeline actions={dashboard.planActionResume} />
-          <ServicesRecommandes services={dashboard.servicesHwcRecommandes} />
         </section>
+
+        <ServicesRecommandes />
 
         <section className="rounded-lg border border-border bg-card p-5 shadow-card">
           <div className="mb-4">

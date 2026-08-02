@@ -52,8 +52,8 @@ export default function DiagnosticStartPage() {
       await deleteDiagnostic(diagnosticId);
       toast.success("Diagnostic supprime.");
       await loadHistory();
-    } catch {
-      toast.error("Impossible de supprimer ce diagnostic.");
+    } catch (error) {
+      toast.error(error.response?.data?.message ?? "Impossible de supprimer ce diagnostic.");
     } finally {
       setDeletingId(null);
     }

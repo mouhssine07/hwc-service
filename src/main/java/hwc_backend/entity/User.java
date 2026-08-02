@@ -61,6 +61,7 @@ public class User {
 
     private LocalDateTime dateDerniereConnexion;
 
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

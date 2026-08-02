@@ -27,4 +27,5 @@ public class DashboardClientDTO {
     private Integer nombreDiagnostics;
     private LocalDateTime dateDernierDiagnostic;
     private BigDecimal progressionDepuisDernier;
+    private BenchmarkSecteurDTO benchmarkSecteur;
 }

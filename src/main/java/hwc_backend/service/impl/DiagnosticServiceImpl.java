@@ -16,6 +16,9 @@ import hwc_backend.entity.ReponseDiagnostic;
 import hwc_backend.entity.Score;
 import hwc_backend.entity.User;
 import hwc_backend.repository.CategorieDiagnosticRepository;
+import hwc_backend.repository.CoachEmailEnvoyeRepository;
+import hwc_backend.repository.CoachObjectifResultatRepository;
+import hwc_backend.repository.CoachObjectifsHebdoRepository;
 import hwc_backend.repository.DiagnosticRepository;
 import hwc_backend.repository.OptionReponseRepository;
 import hwc_backend.repository.QuestionRepository;
@@ -48,6 +51,9 @@ public class DiagnosticServiceImpl implements DiagnosticService {
     private final RecommandationRepository recommandationRepository;
     private final RapportPdfRepository rapportPdfRepository;
     private final ScoreRepository scoreRepository;
+    private final CoachObjectifsHebdoRepository coachObjectifsHebdoRepository;
+    private final CoachObjectifResultatRepository coachObjectifResultatRepository;
+    private final CoachEmailEnvoyeRepository coachEmailEnvoyeRepository;
     private final ScoringService scoringService;
     private final RecommandationService recommandationService;
 
@@ -148,6 +154,11 @@ public class DiagnosticServiceImpl implements DiagnosticService {
     @Transactional
     public void delete(Long diagnosticId, String email) {
         Diagnostic diagnostic = findOwnedDiagnostic(diagnosticId, email);
+        coachObjectifsHebdoRepository.findByDiagnosticId(diagnosticId).forEach(week -> {
+            coachEmailEnvoyeRepository.deleteByObjectifsHebdoId(week.getId());
+            coachObjectifResultatRepository.deleteByObjectifsHebdoId(week.getId());
+            coachObjectifsHebdoRepository.delete(week);
+        });
         rapportPdfRepository.deleteByDiagnosticId(diagnosticId);
         recommandationRepository.deleteByDiagnosticId(diagnosticId);
         reponseDiagnosticRepository.deleteByDiagnosticId(diagnosticId);

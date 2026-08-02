@@ -15,7 +15,7 @@ export default function HistoriqueBarChart({ historique }) {
         <p className="text-sm text-muted-foreground">Evolution des diagnostics finalises</p>
       </div>
       <div className="h-72 min-w-0">
-        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1} initialDimension={{ width: 560, height: 288 }}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="label" tick={{ fontSize: 12 }} />

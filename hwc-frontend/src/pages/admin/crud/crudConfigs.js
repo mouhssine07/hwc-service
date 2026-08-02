@@ -295,7 +295,12 @@ export const crudConfigs = {
     columns: [
       { key: "id", header: "ID" },
       { key: "email", header: "Email" },
+      { key: "nom", header: "Nom" },
+      { key: "telephone", header: "Telephone" },
+      { key: "serviceDemande", header: "Service demande" },
+      { key: "message", header: "Message" },
+      { key: "dateCreation", header: "Date" },
     ],
-    searchFields: ["email"],
+    searchFields: ["email", "nom", "telephone", "serviceDemande", "message"],
   },
 };

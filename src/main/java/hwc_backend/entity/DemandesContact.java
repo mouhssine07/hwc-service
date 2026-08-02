@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * @author SETUP GAME
  **/
@@ -20,4 +22,15 @@ public class DemandesContact {
     private Long id;
 
     private String email;
+
+    private String nom;
+
+    private String telephone;
+
+    private String serviceDemande;
+
+    @Column(length = 1500)
+    private String message;
+
+    private LocalDateTime dateCreation;
 }
