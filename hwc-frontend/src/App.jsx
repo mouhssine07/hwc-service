@@ -54,6 +54,7 @@ import DiagnosticResultatPage from "./pages/client/DiagnosticResultatPage.jsx";
 import RecommandationsPage from "./pages/client/RecommandationsPage.jsx";
 import DashboardClientPage from "./pages/client/DashboardClientPage.jsx";
 import CoachIAPage from "./pages/client/CoachIAPage.jsx";
+import MarketingStrategyCoachPage from "./pages/client/MarketingStrategyCoachPage.jsx";
 
 function Home() {
   return (
@@ -107,6 +108,7 @@ export default function App() {
             <Route index element={<Navigate to="/client/diagnostic" replace />} />
             <Route path="dashboard" element={<DashboardClientPage />} />
             <Route path="coach" element={<CoachIAPage />} />
+            <Route path="coach/marketing" element={<MarketingStrategyCoachPage />} />
             <Route path="diagnostic" element={<DiagnosticStartPage />} />
             <Route path="diagnostic/:diagnosticId/questions" element={<DiagnosticQuestionsPage />} />
             <Route path="diagnostic/:diagnosticId/resultat" element={<DiagnosticResultatPage />} />

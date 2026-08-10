@@ -8,6 +8,7 @@ export default function ClientProtectedRoute() {
   const isClientAuthenticated = useClientAuthStore((state) => state.isClientAuthenticated);
   const clientLogout = useClientAuthStore((state) => state.clientLogout);
   const location = useLocation();
+  const showChatbot = !location.pathname.startsWith("/client/coach");
 
   useEffect(() => {
     if (!isClientAuthenticated) {
@@ -33,7 +34,7 @@ export default function ClientProtectedRoute() {
   return (
     <>
       <Outlet />
-      <ChatbotButton />
+      {showChatbot ? <ChatbotButton /> : null}
     </>
   );
 }

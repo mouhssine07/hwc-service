@@ -1,4 +1,4 @@
-import { Bot, CalendarDays, Laptop, Loader2, Search, X } from "lucide-react";
+import { CalendarDays, Laptop, Loader2, Search, X } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -7,24 +7,25 @@ import useClientAuthStore from "../../store/clientAuthStore.js";
 
 const SERVICES_HWC = [
   {
-    titre: "SEO & SEA",
-    description: "Augmentez votre visibilité organique",
+    titre: "Conseil en Leadership",
+    description: "Développez votre posture de dirigeant",
     presentation:
-      "Améliorez votre positionnement sur Google grâce à un audit SEO, une stratégie de mots-clés et des campagnes publicitaires pilotées par des indicateurs clairs.",
-    accompagnement: "Un expert HWC analyse votre présence digitale et prépare avec vous un plan d’acquisition mesurable.",
-    scoreLie: "Marketing",
+      "Transformez les résultats de votre diagnostic en objectifs concrets pour renforcer votre posture, vos priorités et votre communication managériale.",
+    accompagnement: "Un agent HWC analyse vos besoins et vous accompagne dans le développement de votre leadership.",
+    scoreLie: "Leadership",
     type: "humain",
-    icon: Search,
+    icon: CalendarDays,
   },
   {
-    titre: "Coaching Dirigeants",
-    description: "Développez votre leadership",
+    titre: "Coach IA Marketing Digital",
+    description: "Développez une stratégie adaptée à votre entreprise",
     presentation:
-      "Transformez les résultats de votre diagnostic en objectifs hebdomadaires concrets pour renforcer votre posture, vos priorités et votre communication managériale.",
-    accompagnement: "Votre Coach IA génère et suit trois objectifs personnalisés chaque semaine.",
-    scoreLie: "Leadership",
-    type: "ia",
-    icon: Bot,
+      "Construisez pas à pas votre objectif, votre cible, votre positionnement, vos canaux et un plan d'action mesurable sur quatre semaines.",
+    accompagnement: "Le Coach IA utilise uniquement la bibliothèque Marketing Digital et conserve votre progression.",
+    scoreLie: "Marketing",
+    type: "marketing-ia",
+    path: "/client/coach/marketing",
+    icon: Search,
   },
   {
     titre: "Refonte Site Web",
@@ -54,7 +55,7 @@ export default function ServicesRecommandes() {
       <div className="grid gap-4 md:grid-cols-3">
         {SERVICES_HWC.map((service) => {
           const Icon = service.icon;
-          const aiCoaching = service.type === "ia";
+          const aiCoaching = service.type === "ia" || service.type === "marketing-ia";
           return (
             <article
               key={service.titre}
@@ -79,9 +80,9 @@ export default function ServicesRecommandes() {
               <button
                 type="button"
                 className={aiCoaching ? "btn btn-hero mt-auto w-full" : "btn btn-outline-hero mt-auto w-full"}
-                onClick={() => aiCoaching ? navigate("/client/coach") : setSelectedService(service)}
+                onClick={() => aiCoaching ? navigate(service.path ?? "/client/coach") : setSelectedService(service)}
               >
-                {aiCoaching ? "Démarrer mon coaching IA" : "Prendre rendez-vous avec un agent"}
+                {service.type === "marketing-ia" ? "Développer ma stratégie Marketing Digital" : aiCoaching ? "Démarrer mon coaching IA" : "Prendre rendez-vous avec un agent"}
               </button>
             </article>
           );
