@@ -24,6 +24,17 @@ public class MarketingStageEvaluator {
         return state;
     }
 
+    public MarketingSessionState evaluateAfterDetailedAnswer(MarketingSessionState state) {
+        MarketingStrategyStage before;
+        do {
+            before = state.getStage();
+            evaluateAfterAnswer(state);
+        } while (state.getStage() != before
+                && state.getStage() != MarketingStrategyStage.FINAL_DELIVERABLE
+                && missingFor(state.getStage(), state).isEmpty());
+        return state;
+    }
+
     private void completeDerivedFields(MarketingSessionState state) {
         if (state.getStage() != MarketingStrategyStage.OBJECTIVES) return;
         MarketingSessionState.Objectives objectives = state.getObjectives();
@@ -118,7 +129,7 @@ public class MarketingStageEvaluator {
             case "audit.trackingAvailable" -> "Mesurez-vous actuellement les conversions générées par vos actions marketing ?";
             case "targetAudience.segments" -> "Quel segment de clientèle voulez-vous cibler en priorité ?";
             case "targetAudience.primaryPersona.primaryNeed" -> "Quel est le besoin principal de cette cible ?";
-            case "targetAudience.primaryPersona.mainObjection" -> "Quelle est l'objection ou le frein principal de cette cible avant d'acheter ?";
+            case "targetAudience.primaryPersona.mainObjection" -> contextualObjectionQuestion(state);
             case "positioning.valueProposition" -> "Pourquoi cette cible devrait-elle choisir votre offre plutôt qu'une alternative ?";
             case "recommendedChannels" -> "Parmi les canaux justifiés par l'audit, lesquels pouvez-vous réellement exploiter ?";
             case "budget.monthlyAmount" -> "Quel budget marketing mensuel pouvez-vous consacrer à ce plan ?";
@@ -134,6 +145,16 @@ public class MarketingStageEvaluator {
         if (previousStage == state.getStage()) {
             return "Merci, j'ai bien noté votre réponse. " + fallbackQuestion(state);
         }
+        if (state.getStage().ordinal() - previousStage.ordinal() > 1) {
+            java.util.List<String> completed = new java.util.ArrayList<>();
+            for (int index = previousStage.ordinal(); index < state.getStage().ordinal(); index++) {
+                completed.add(stageLabel(MarketingStrategyStage.values()[index]));
+            }
+            String joined = completed.size() == 2
+                    ? completed.get(0) + " et " + completed.get(1)
+                    : String.join(", ", completed.subList(0, completed.size() - 1)) + " et " + completed.getLast();
+            return "Votre " + joined + " sont maintenant suffisamment clairs. " + fallbackQuestion(state);
+        }
         String acknowledgement = switch (previousStage) {
             case COMPANY_DISCOVERY -> "Merci, j'ai maintenant une première compréhension de votre entreprise.";
             case OBJECTIVES -> "Parfait, votre priorité marketing est maintenant plus claire.";
@@ -147,6 +168,32 @@ public class MarketingStageEvaluator {
             case FINAL_DELIVERABLE, COMPLETED -> "Votre stratégie est prête.";
         };
         return acknowledgement + " " + fallbackQuestion(state);
+    }
+
+    private String contextualObjectionQuestion(MarketingSessionState state) {
+        String sector = state.getCompany().getSector();
+        if (sector != null && sector.toLowerCase().contains("restaur")) {
+            String company = state.getCompany().getName();
+            return "Avant de réserver" + (company == null || company.isBlank() ? "" : " chez " + company)
+                    + ", qu'est-ce qui pourrait surtout freiner cette cible : le prix, le temps d'attente, la localisation ou le manque de visibilité sur le menu ?";
+        }
+        return "Quelle est l'objection ou le frein principal de cette cible avant d'acheter ?";
+    }
+
+    private String stageLabel(MarketingStrategyStage stage) {
+        return switch (stage) {
+            case COMPANY_DISCOVERY -> "entreprise";
+            case OBJECTIVES -> "objectif";
+            case CURRENT_AUDIT -> "audit";
+            case TARGET_AUDIENCE -> "cible";
+            case POSITIONING -> "positionnement";
+            case CHANNEL_SELECTION -> "sélection de canaux";
+            case BUDGET_AND_RESOURCES -> "ressources";
+            case ACTION_PLAN -> "plan d'action";
+            case KPI_SELECTION -> "KPI";
+            case FINAL_DELIVERABLE -> "livrable";
+            case COMPLETED -> "suivi";
+        };
     }
 
     private MarketingStrategyStage next(MarketingStrategyStage stage) {

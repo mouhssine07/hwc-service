@@ -22,6 +22,12 @@ public class MarketingTargetAudienceAnswerNormalizer {
         boolean hasObjection = hasText(persona, "mainObjection", "objection", "objectionMajeure");
         String normalized = normalize(answer);
 
+        // A segment identifies who the client is; it must not also be stored as
+        // that persona's need. The need is collected by the following question.
+        if (!hasNeed && looksLikeSegment(normalized) && !looksLikeNeed(normalized)) {
+            return state;
+        }
+
         if (!hasNeed && looksLikeNeed(normalized)) {
             persona.put("primaryNeed", answer);
         } else if (!hasObjection && looksLikeObjection(normalized)) {
@@ -50,6 +56,10 @@ public class MarketingTargetAudienceAnswerNormalizer {
 
     private boolean looksLikeNeed(String value) {
         return value.matches(".*\\b(besoin|recherche|recherchent|veut|veulent|souhaite|souhaitent|gagner du temps)\\b.*");
+    }
+
+    private boolean looksLikeSegment(String value) {
+        return value.matches(".*\\b(cibler|cible|proprietaires|vendeurs|acheteurs|entreprises|particuliers|professionnels|clients)\\b.*");
     }
 
     private String normalize(String value) {

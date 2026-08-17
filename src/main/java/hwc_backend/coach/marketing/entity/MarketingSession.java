@@ -56,6 +56,18 @@ public class MarketingSession {
     @Column(nullable = false)
     private boolean completed;
 
+    @Column(name = "check_ins_enabled", nullable = false)
+    private boolean checkInsEnabled = true;
+
+    @Column(name = "deliverable_generated_at")
+    private LocalDateTime deliverableGeneratedAt;
+
+    @Column(name = "last_check_in_at")
+    private LocalDateTime lastCheckInAt;
+
+    @Column(name = "last_client_activity_at")
+    private LocalDateTime lastClientActivityAt;
+
     @Version
     private Long version;
 
@@ -70,6 +82,7 @@ public class MarketingSession {
         LocalDateTime now = LocalDateTime.now();
         createdAt = createdAt == null ? now : createdAt;
         updatedAt = now;
+        lastClientActivityAt = lastClientActivityAt == null ? now : lastClientActivityAt;
         stage = stage == null ? MarketingStrategyStage.COMPANY_DISCOVERY : stage;
     }
 

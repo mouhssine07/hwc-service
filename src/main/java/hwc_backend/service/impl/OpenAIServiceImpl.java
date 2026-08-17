@@ -39,11 +39,17 @@ public class OpenAIServiceImpl implements OpenAIService {
         }
     }
 
+    @Override
+    public String generateText(List<Map<String, String>> messages, int maxOutputTokens) {
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new IllegalStateException("OPENAI_API_KEY is required");
+        }
+        return callResponsesApi(messages, maxOutputTokens);
+    }
+
     private String callResponsesApi(String contexte) {
-        RestClient restClient = RestClient.builder().build();
-        Map<String, Object> request = Map.of(
-                "model", model,
-                "input", List.of(
+        return callResponsesApi(
+                List.of(
                         Map.of(
                                 "role", "system",
                                 "content", "Tu es un consultant senior de Harmony Works Consulting. Redige en francais un rapport executif clair, professionnel et actionnable. Retourne uniquement un JSON valide avec les cles introduction, analyseForts, analyseFaibles, planAction, conclusion."
@@ -53,7 +59,16 @@ public class OpenAIServiceImpl implements OpenAIService {
                                 "content", contexte
                         )
                 ),
-                "max_output_tokens", 1400
+                1400
+        );
+    }
+
+    private String callResponsesApi(List<Map<String, String>> messages, int maxOutputTokens) {
+        RestClient restClient = RestClient.builder().build();
+        Map<String, Object> request = Map.of(
+                "model", model,
+                "input", messages,
+                "max_output_tokens", maxOutputTokens
         );
 
         String requestBody;

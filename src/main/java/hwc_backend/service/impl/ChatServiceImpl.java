@@ -1,7 +1,5 @@
 package hwc_backend.service.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import hwc_backend.dto.chat.ChatConversationDTO;
 import hwc_backend.dto.chat.ChatMessageDTO;
 import hwc_backend.dto.chat.ChatMessageRequestDTO;
@@ -22,6 +20,7 @@ import hwc_backend.repository.RecommandationRepository;
 import hwc_backend.repository.ScoreRepository;
 import hwc_backend.repository.UserRepository;
 import hwc_backend.service.ChatService;
+import hwc_backend.service.OpenAIService;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -30,10 +29,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +38,6 @@ public class ChatServiceImpl implements ChatService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private final UserRepository userRepository;
     private final DiagnosticRepository diagnosticRepository;
     private final ScoreRepository scoreRepository;
@@ -49,12 +45,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatConversationRepository chatConversationRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final CoachObjectifResultatRepository coachObjectifResultatRepository;
-
-    @Value("${ollama.base-url:http://localhost:11434}")
-    private String ollamaBaseUrl;
-
-    @Value("${ollama.model:llama3.2:latest}")
-    private String ollamaModel;
+    private final OpenAIService openAIService;
 
     @Value("${chat.memory.max-messages:12}")
     private int maxMemoryMessages;
@@ -139,14 +130,13 @@ public class ChatServiceImpl implements ChatService {
     private String generateAnswer(User user, ChatConversation conversation, List<ChatMessage> history, CoachObjectifResultat coachObjectif) {
         String systemPrompt = buildSystemPrompt(user, conversation.getDiagnosticId(), coachObjectif);
         try {
-            return callOllama(systemPrompt, history);
+            return callOpenAI(systemPrompt, history);
         } catch (RuntimeException exception) {
             return fallbackAnswer(conversation.getDiagnosticId());
         }
     }
 
-    private String callOllama(String systemPrompt, List<ChatMessage> history) {
-        RestClient restClient = RestClient.builder().baseUrl(ollamaBaseUrl).build();
+    private String callOpenAI(String systemPrompt, List<ChatMessage> history) {
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", systemPrompt));
         history.stream()
@@ -156,37 +146,7 @@ public class ChatServiceImpl implements ChatService {
                         "content", message.getContenu()
                 )));
 
-        Map<String, Object> request = Map.of(
-                "model", ollamaModel,
-                "stream", false,
-                "messages", messages,
-                "options", Map.of(
-                        "temperature", 0.3,
-                        "num_predict", 700
-                )
-        );
-
-        String responseBody = restClient.post()
-                .uri("/api/chat")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
-                .retrieve()
-                .body(String.class);
-
-        if (responseBody == null || responseBody.isBlank()) {
-            throw new IllegalStateException("Ollama response is empty");
-        }
-
-        try {
-            JsonNode root = objectMapper.readTree(responseBody);
-            String content = root.path("message").path("content").asText();
-            if (content == null || content.isBlank()) {
-                throw new IllegalStateException("Ollama response content not found");
-            }
-            return content.trim();
-        } catch (Exception exception) {
-            throw new IllegalStateException("Unable to parse Ollama response", exception);
-        }
+        return openAIService.generateText(messages, 700).trim();
     }
 
     private String buildSystemPrompt(User user, Long diagnosticId, CoachObjectifResultat coachObjectif) {
@@ -394,7 +354,7 @@ public class ChatServiceImpl implements ChatService {
         if (diagnosticId == null) {
             return "Je peux vous aider a lire votre diagnostic HWC, vos scores et vos recommandations. Pour une analyse plus precise, lancez ou ouvrez un diagnostic finalise.";
         }
-        return "Ollama local ne repond pas pour le moment. Votre question est bien enregistree; relancez Ollama puis reessayez pour obtenir une analyse IA basee sur ce diagnostic.";
+        return "Le service GPT ne repond pas pour le moment. Votre question est bien enregistree; reessayez dans quelques instants pour obtenir une analyse IA basee sur ce diagnostic.";
     }
 
     private String valueOrDash(String value) {

@@ -44,13 +44,24 @@ public class MarketingSessionState {
     @Builder.Default
     private List<String> assumptions = new ArrayList<>();
     @Builder.Default
+    private List<Map<String, Object>> publicWebFindings = new ArrayList<>();
+    @Builder.Default
+    private Map<String, InformationType> informationTypes = new LinkedHashMap<>();
+    @Builder.Default
     private Confidence confidence = Confidence.LOW;
+    @Builder.Default
+    private ToneProfile toneProfile = ToneProfile.PEDAGOGICAL;
     private boolean completed;
 
     public enum Confidence { LOW, MEDIUM, HIGH }
 
+    public enum ToneProfile { PEDAGOGICAL, DIRECT, TECHNICAL }
+
+    public enum InformationType { DATA, HYPOTHESIS, RECOMMENDATION }
+
     @Data @NoArgsConstructor @AllArgsConstructor
     public static class Company {
+        private String name;
         private String sector;
         private List<String> productsOrServices = new ArrayList<>();
         private String businessModel;

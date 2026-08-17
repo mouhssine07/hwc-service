@@ -14,6 +14,6 @@ class MarketingPromptServiceTests {
         assertThat(service.systemPrompt())
                 .contains("stratégie Marketing Digital", "une seule question principale", "n'invente");
         assertThat(service.deliverableTemplate())
-                .contains("# Mini-stratégie Marketing Digital", "{{companySummary}}", "{{fourWeekPlan}}");
+                .contains("# Mini-stratégie Marketing Digital", "{{companySummary}}", "{{fourWeekPlanTable}}");
     }
 }

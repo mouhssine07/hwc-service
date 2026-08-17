@@ -26,7 +26,7 @@
 
 ## 7. Plan d'action sur quatre semaines
 
-{{fourWeekPlan}}
+{{fourWeekPlanTable}}
 
 ## 8. Budget et ressources
 

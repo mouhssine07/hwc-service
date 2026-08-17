@@ -46,4 +46,17 @@ class MarketingStageEvaluatorTests {
 
         assertThat(evaluator.canFinalize(state)).isFalse();
     }
+
+    @Test
+    void summarizesSkippedStagesAndContextualizesRestaurantObjection() {
+        MarketingSessionState state = new MarketingSessionState();
+        state.setStage(MarketingStrategyStage.TARGET_AUDIENCE);
+        state.getCompany().setName("Le Petit Comptoir");
+        state.getCompany().setSector("Restauration");
+        state.setMissingInformation(List.of("targetAudience.primaryPersona.mainObjection"));
+
+        String message = evaluator.transitionMessage(MarketingStrategyStage.COMPANY_DISCOVERY, state);
+
+        assertThat(message).contains("entreprise, objectif et audit", "Le Petit Comptoir", "temps d'attente");
+    }
 }

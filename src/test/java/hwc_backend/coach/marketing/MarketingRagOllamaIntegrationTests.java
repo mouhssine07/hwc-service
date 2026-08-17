@@ -8,6 +8,7 @@ import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import hwc_backend.coach.marketing.ingestion.MarketingKnowledgeIngestionService;
 import hwc_backend.coach.marketing.model.MarketingKnowledgeChunk;
 import hwc_backend.coach.marketing.service.MarketingRagServiceImpl;
+import hwc_backend.coach.marketing.service.MarketingLexicalIndex;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -23,14 +24,15 @@ class MarketingRagOllamaIntegrationTests {
                 .modelName("text-embedding-3-small")
                 .build();
         var store = new InMemoryEmbeddingStore<TextSegment>();
-        var ingestion = new MarketingKnowledgeIngestionService(model, store);
+        var lexicalIndex = new MarketingLexicalIndex();
+        var ingestion = new MarketingKnowledgeIngestionService(model, store, lexicalIndex);
 
         var report = ingestion.ingest();
         assertThat(report.documentCount()).isEqualTo(14);
         assertThat(report.chunkCount()).isGreaterThan(20);
         assertThat(store.size()).isEqualTo(report.chunkCount());
 
-        var rag = new MarketingRagServiceImpl(model, store);
+        var rag = new MarketingRagServiceImpl(model, store, lexicalIndex);
         ReflectionTestUtils.setField(rag, "enabled", true);
         ReflectionTestUtils.setField(rag, "maxResults", 5);
         ReflectionTestUtils.setField(rag, "minScore", 0.45D);

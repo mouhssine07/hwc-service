@@ -15,6 +15,7 @@ import hwc_backend.coach.marketing.service.MarketingLanguageModelService;
 import hwc_backend.coach.marketing.service.MarketingPromptService;
 import hwc_backend.coach.marketing.service.MarketingSessionService;
 import hwc_backend.coach.marketing.service.MarketingStageEvaluator;
+import hwc_backend.coach.marketing.service.MarketingActionPlanService;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,13 +28,14 @@ class MarketingDeliverableServiceTests {
     void generatesValidatesRendersAndPersistsACompleteStrategy() {
         MarketingSessionService sessionService = mock(MarketingSessionService.class);
         MarketingLanguageModelService languageModel = mock(MarketingLanguageModelService.class);
+        MarketingActionPlanService actionPlanService = mock(MarketingActionPlanService.class);
         MarketingSessionState state = completeState();
         when(sessionService.getState("session-demo", "client@hwc.ma")).thenReturn(state);
         when(languageModel.generateJson(contains("Marketing Digital"), contains("ÉTAT VALIDÉ")))
                 .thenReturn(validDeliverableJson());
 
         MarketingDeliverableServiceImpl service = new MarketingDeliverableServiceImpl(
-                sessionService, new MarketingStageEvaluator(), new MarketingPromptService(), languageModel);
+                sessionService, new MarketingStageEvaluator(), new MarketingPromptService(), languageModel, actionPlanService);
 
         MarketingStrategyResult result = service.finalizeStrategy("session-demo", "client@hwc.ma");
 
@@ -41,12 +43,15 @@ class MarketingDeliverableServiceTests {
                 "# Mini-stratégie Marketing Digital",
                 "Augmenter de 30 % les réservations directes",
                 "Google Business Profile",
-                "Semaine 4");
+                "Semaine 4",
+                "| Semaine | Actions | Responsable | Résultat attendu |");
         assertThat(state.getStage()).isEqualTo(MarketingStrategyStage.COMPLETED);
         assertThat(state.isCompleted()).isTrue();
         verify(sessionService).saveDeliverable(eq("session-demo"), eq("client@hwc.ma"),
                 contains("priorityChannels"), contains("# Mini-stratégie Marketing Digital"));
         verify(sessionService).saveState("session-demo", "client@hwc.ma", state);
+        verify(actionPlanService).initializeFromDeliverable(eq("session-demo"), eq("client@hwc.ma"),
+                org.mockito.ArgumentMatchers.any());
     }
 
     private MarketingSessionState completeState() {

@@ -45,4 +45,29 @@ class MarketingConversationGuardTests {
         assertThat(guard.reply(state, "Est-ce que vous comprenez ce que je dis ?"))
                 .contains("Oui, je vous comprends", "Vente immobilière", "B2B");
     }
+
+    @Test
+    void uncertaintyVariantsDoNotCountAsAnswersAndReceiveConcreteChoices() {
+        MarketingSessionState state = new MarketingSessionState();
+        state.setMissingInformation(java.util.List.of("objectives.targetValue"));
+
+        assertThat(guard.isNonInformative("je sais pas aussi")).isTrue();
+        assertThat(guard.reply(state, "je sais pas aussi"))
+                .contains("Changeons d'approche", "10, 20 ou 30");
+        assertThat(guard.suggestedReplies(state))
+                .containsExactly("Environ 10 par mois", "Environ 20 par mois", "Environ 30 par mois");
+    }
+
+    @Test
+    void answersQuestionsAboutCorrectedCompanyWithoutAdvancing() {
+        MarketingSessionState state = new MarketingSessionState();
+        state.getCompany().setName("zoubir immo");
+        state.getCompany().setSector("Immobilier");
+        state.getCompany().setProductsOrServices(java.util.List.of("Services d'agence immobilière"));
+        state.setMissingInformation(java.util.List.of("company.businessModel"));
+
+        assertThat(guard.asksAboutKnownState("Alors maintenant c'est quoi mon entreprise ?")).isTrue();
+        assertThat(guard.reply(state, "Alors maintenant c'est quoi mon entreprise ?"))
+                .contains("zoubir immo", "Immobilier", "Services d'agence immobilière", "particuliers");
+    }
 }

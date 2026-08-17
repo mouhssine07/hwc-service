@@ -35,6 +35,18 @@ class MarketingTargetAudienceAnswerNormalizerTests {
         assertThat(state.getStage()).isEqualTo(MarketingStrategyStage.POSITIONING);
     }
 
+    @Test
+    void doesNotReuseASegmentAsItsPrimaryNeed() {
+        MarketingSessionState state = targetAudienceState();
+        normalizer.normalize(state, "Je veux cibler en priorité les propriétaires vendeurs à Casablanca.");
+        evaluator.evaluateAfterAnswer(state);
+
+        assertThat(state.getTargetAudience().getPrimaryPersona()).isNullOrEmpty();
+        assertThat(state.getMissingInformation())
+                .containsExactly("targetAudience.primaryPersona.primaryNeed", "targetAudience.primaryPersona.mainObjection");
+        assertThat(evaluator.fallbackQuestion(state)).containsIgnoringCase("besoin principal");
+    }
+
     private MarketingSessionState targetAudienceState() {
         MarketingSessionState state = new MarketingSessionState();
         state.setStage(MarketingStrategyStage.TARGET_AUDIENCE);

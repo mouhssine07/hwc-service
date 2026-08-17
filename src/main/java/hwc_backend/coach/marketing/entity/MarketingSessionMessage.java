@@ -53,6 +53,9 @@ public class MarketingSessionMessage {
     @Column(name = "image_name", length = 255)
     private String imageName;
 
+    @Column(name = "image_annotations_json", columnDefinition = "LONGTEXT")
+    private String imageAnnotationsJson;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

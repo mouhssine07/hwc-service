@@ -103,7 +103,7 @@ export default function ChatbotWindow({ onClose, coachObjective = null, initialD
           <MessageSquare className="h-5 w-5 shrink-0" />
           <div className="min-w-0">
             <h2 className="truncate text-sm font-bold">{coachObjective ? "Coach IA — suivi de l'objectif" : "Assistant HWC"}</h2>
-            <p className="truncate text-xs text-primary-foreground/80">{coachObjective?.titre ?? "Analyse diagnostic avec Ollama local"}</p>
+            <p className="truncate text-xs text-primary-foreground/80">{coachObjective?.titre ?? "Analyse du diagnostic avec GPT"}</p>
           </div>
         </div>
         <button

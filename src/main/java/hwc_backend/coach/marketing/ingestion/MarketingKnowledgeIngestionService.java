@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
+import hwc_backend.coach.marketing.service.MarketingLexicalIndex;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +32,6 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class MarketingKnowledgeIngestionService {
 
     public static final String SERVICE_ID = "MARKETING_STRATEGY";
@@ -42,6 +43,23 @@ public class MarketingKnowledgeIngestionService {
 
     private final EmbeddingModel marketingEmbeddingModel;
     private final EmbeddingStore<TextSegment> marketingEmbeddingStore;
+    private final MarketingLexicalIndex lexicalIndex;
+
+    public MarketingKnowledgeIngestionService(
+            EmbeddingModel marketingEmbeddingModel,
+            EmbeddingStore<TextSegment> marketingEmbeddingStore) {
+        this(marketingEmbeddingModel, marketingEmbeddingStore, new MarketingLexicalIndex());
+    }
+
+    @Autowired
+    public MarketingKnowledgeIngestionService(
+            EmbeddingModel marketingEmbeddingModel,
+            EmbeddingStore<TextSegment> marketingEmbeddingStore,
+            MarketingLexicalIndex lexicalIndex) {
+        this.marketingEmbeddingModel = marketingEmbeddingModel;
+        this.marketingEmbeddingStore = marketingEmbeddingStore;
+        this.lexicalIndex = lexicalIndex;
+    }
 
     @Value("${coach.marketing.rag.enabled:false}")
     private boolean enabled;
@@ -68,6 +86,7 @@ public class MarketingKnowledgeIngestionService {
         List<String> ids = segments.stream().map(this::stableId).toList();
         marketingEmbeddingStore.removeAll();
         marketingEmbeddingStore.addAll(ids, embeddings, segments);
+        lexicalIndex.replace(segments);
 
         documents.forEach(document -> log.info("Marketing document indexed documentId={} title={} chunks={}",
                 document.metadata().get("document_id"), document.metadata().get("title"), toSegments(document).size()));

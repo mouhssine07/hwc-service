@@ -20,6 +20,7 @@ import hwc_backend.repository.RecommandationRepository;
 import hwc_backend.repository.UserRepository;
 import hwc_backend.service.CoachIAService;
 import hwc_backend.service.CoachNotificationService;
+import hwc_backend.service.OpenAIService;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -30,11 +31,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 
 @Service
 @RequiredArgsConstructor
@@ -47,13 +45,8 @@ public class CoachIAServiceImpl implements CoachIAService {
     private final CoachObjectifResultatRepository objectifResultatRepository;
     private final CoachEmailEnvoyeRepository emailEnvoyeRepository;
     private final CoachNotificationService notificationService;
+    private final OpenAIService openAIService;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Value("${ollama.base-url:http://localhost:11434}")
-    private String ollamaBaseUrl;
-
-    @Value("${ollama.model:llama3.2:latest}")
-    private String ollamaModel;
 
     @Override
     @Transactional
@@ -175,13 +168,13 @@ public class CoachIAServiceImpl implements CoachIAService {
         List<Recommandation> recommendations = recommandationRepository.findByDiagnosticIdOrderByPrioriteAsc(diagnostic.getId());
         List<ObjectiveDraft> carryOver = previousIncompleteObjectives(user, diagnostic);
         try {
-            List<ObjectiveDraft> generated = callOllama(user, diagnostic, recommendations);
+            List<ObjectiveDraft> generated = callOpenAI(user, diagnostic, recommendations);
             List<ObjectiveDraft> combined = combineObjectives(carryOver, generated);
             if (combined.size() >= 3) {
                 return combined.subList(0, 3);
             }
         } catch (RuntimeException ignored) {
-            // The deterministic plan below keeps the Coach available without Ollama.
+            // The deterministic plan below keeps the Coach available when GPT is unavailable.
         }
         return combineObjectives(carryOver, fallbackObjectives(recommendations)).stream().limit(3).toList();
     }
@@ -211,7 +204,7 @@ public class CoachIAServiceImpl implements CoachIAService {
         return combined;
     }
 
-    private List<ObjectiveDraft> callOllama(User user, Diagnostic diagnostic, List<Recommandation> recommendations) {
+    private List<ObjectiveDraft> callOpenAI(User user, Diagnostic diagnostic, List<Recommandation> recommendations) {
         String recommendationsText = recommendations.stream()
                 .limit(5)
                 .map(recommendation -> "- " + recommendation.getTitre() + ": " + safe(recommendation.getDescription()))
@@ -225,21 +218,14 @@ public class CoachIAServiceImpl implements CoachIAService {
                 Recommandations:%s
                 """.formatted(user.getPrenom(), user.getNom(), safe(user.getEntreprise()), diagnostic.getScoreGlobal(), recommendationsText);
 
-        RestClient restClient = RestClient.builder().baseUrl(ollamaBaseUrl).build();
-        Map<String, Object> request = Map.of(
-                "model", ollamaModel,
-                "stream", false,
-                "format", "json",
-                "messages", List.of(
+        String content = openAIService.generateText(
+                List.of(
                         Map.of("role", "system", "content", "Tu reponds uniquement en JSON valide."),
                         Map.of("role", "user", "content", prompt)
                 ),
-                "options", Map.of("temperature", 0.2, "num_predict", 550)
+                550
         );
-        String response = restClient.post().uri("/api/chat").contentType(MediaType.APPLICATION_JSON).body(request)
-                .retrieve().body(String.class);
         try {
-            String content = objectMapper.readTree(response).path("message").path("content").asText();
             if (content.isBlank()) {
                 throw new IllegalStateException("Reponse Coach IA vide");
             }

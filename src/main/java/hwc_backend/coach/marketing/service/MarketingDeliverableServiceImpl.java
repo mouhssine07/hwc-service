@@ -27,6 +27,7 @@ public class MarketingDeliverableServiceImpl implements MarketingDeliverableServ
     private final MarketingStageEvaluator stageEvaluator;
     private final MarketingPromptService promptService;
     private final MarketingLanguageModelService languageModelService;
+    private final MarketingActionPlanService actionPlanService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -45,6 +46,7 @@ public class MarketingDeliverableServiceImpl implements MarketingDeliverableServ
         String normalizedJson = pretty(result);
         String markdown = renderMarkdown(result);
         sessionService.saveDeliverable(sessionId, email, normalizedJson, markdown);
+        actionPlanService.initializeFromDeliverable(sessionId, email, result);
 
         state.setStage(MarketingStrategyStage.COMPLETED);
         state.setCompleted(true);
@@ -104,7 +106,7 @@ public class MarketingDeliverableServiceImpl implements MarketingDeliverableServ
                 .replace("{{targetAudience}}", markdownValue(result.path("targetAudience")))
                 .replace("{{positioning}}", markdownValue(result.path("positioning")))
                 .replace("{{priorityChannels}}", markdownValue(result.path("priorityChannels")))
-                .replace("{{fourWeekPlan}}", markdownValue(result.path("fourWeekPlan")))
+                .replace("{{fourWeekPlanTable}}", renderPlanTable(result.path("fourWeekPlan")))
                 .replace("{{budgetAndResources}}", markdownValue(result.path("budgetAndResources")))
                 .replace("{{kpis}}", markdownValue(result.path("kpis")))
                 .replace("{{assumptionsAndChecks}}", markdownValue(result.path("assumptions"))
@@ -128,6 +130,31 @@ public class MarketingDeliverableServiceImpl implements MarketingDeliverableServ
                 .append(entry.getValue().isTextual() ? entry.getValue().asText() : compact(entry.getValue()))
                 .append("\n"));
         return markdown.toString().trim();
+    }
+
+    private String renderPlanTable(JsonNode plan) {
+        StringBuilder table = new StringBuilder("| Semaine | Actions | Responsable | Résultat attendu |\n")
+                .append("|---|---|---|---|\n");
+        for (JsonNode item : plan) {
+            table.append("| ").append(tableCell(item.path("week")))
+                    .append(" | ").append(tableCell(item.path("actions")))
+                    .append(" | ").append(tableCell(item.path("owner")))
+                    .append(" | ").append(tableCell(item.path("expectedResult"))).append(" |\n");
+        }
+        return table.toString().trim();
+    }
+
+    private String tableCell(JsonNode value) {
+        if (value == null || value.isMissingNode() || value.isNull()) return "À préciser";
+        String text;
+        if (value.isArray()) {
+            List<String> values = new java.util.ArrayList<>();
+            value.forEach(item -> values.add(item.isTextual() ? item.asText() : compact(item)));
+            text = String.join(" · ", values);
+        } else {
+            text = value.isTextual() ? value.asText() : compact(value);
+        }
+        return text.replace("|", "\\|").replace("\n", " ").trim();
     }
 
     private String humanize(String value) {

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { getClientDashboard } from "../../api/dashboardApi.js";
+import { getMarketingProactivePriority } from "../../api/marketingCoachApi.js";
 import { downloadDiagnosticReport, downloadExistingReport, getRapportsHistory, savePdfBlob } from "../../api/rapportApi.js";
 import AlertesCritiques from "../../components/dashboard/AlertesCritiques.jsx";
 import BenchmarkSecteur from "../../components/dashboard/BenchmarkSecteur.jsx";
@@ -13,6 +14,7 @@ import PlanActionTimeline from "../../components/dashboard/PlanActionTimeline.js
 import RadarChartScores from "../../components/dashboard/RadarChartScores.jsx";
 import ScoreGlobalDonut from "../../components/dashboard/ScoreGlobalDonut.jsx";
 import ServicesRecommandes from "../../components/dashboard/ServicesRecommandes.jsx";
+import MarketingCoachPriority from "../../components/dashboard/MarketingCoachPriority.jsx";
 import useClientAuthStore from "../../store/clientAuthStore.js";
 
 export default function DashboardClientPage() {
@@ -22,12 +24,14 @@ export default function DashboardClientPage() {
   const [rapports, setRapports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
+  const [marketingPriority, setMarketingPriority] = useState(null);
 
   useEffect(() => {
-    Promise.all([getClientDashboard(), getRapportsHistory()])
-      .then(([dashboardData, rapportsData]) => {
+    Promise.all([getClientDashboard(), getRapportsHistory(), getMarketingProactivePriority().catch(() => null)])
+      .then(([dashboardData, rapportsData, priorityData]) => {
         setDashboard(dashboardData);
         setRapports(rapportsData);
+        setMarketingPriority(priorityData);
       })
       .catch(() => toast.error("Impossible de charger le dashboard client"))
       .finally(() => setLoading(false));
@@ -80,6 +84,7 @@ export default function DashboardClientPage() {
       <main className="min-h-screen bg-muted/30">
         <ClientTopbar onLogout={handleLogout} />
         <section className="mx-auto max-w-4xl px-4 py-10">
+          <MarketingCoachPriority priority={marketingPriority} onOpen={() => navigate("/client/coach/marketing")} />
           <div className="rounded-lg border border-border bg-card p-8 shadow-elevated">
             <p className="text-sm font-semibold uppercase tracking-wider text-primary">Dashboard client</p>
             <h1 className="mt-3 font-display text-3xl font-bold text-foreground">Aucun diagnostic finalise</h1>
@@ -100,6 +105,7 @@ export default function DashboardClientPage() {
     <main className="min-h-screen bg-muted/30">
       <ClientTopbar onLogout={handleLogout} />
       <div className="mx-auto max-w-7xl space-y-5 px-4 py-6">
+        <MarketingCoachPriority priority={marketingPriority} onOpen={() => navigate("/client/coach/marketing")} />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <button
             type="button"

@@ -9,6 +9,13 @@ import hwc_backend.coach.marketing.model.MarketingStrategyStage;
 import hwc_backend.coach.marketing.model.MarketingSessionSummary;
 import hwc_backend.coach.marketing.repository.MarketingSessionMessageRepository;
 import hwc_backend.coach.marketing.repository.MarketingSessionRepository;
+import hwc_backend.coach.marketing.entity.MarketingStateCorrection;
+import hwc_backend.coach.marketing.repository.MarketingStateCorrectionRepository;
+import hwc_backend.coach.marketing.repository.MarketingKpiMeasurementRepository;
+import hwc_backend.coach.marketing.repository.MarketingActionItemRepository;
+import hwc_backend.coach.marketing.model.MarketingStateCorrectionView;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import hwc_backend.entity.User;
 import hwc_backend.repository.UserRepository;
 import hwc_backend.repository.DiagnosticRepository;
@@ -34,6 +41,10 @@ public class MarketingSessionServiceImpl implements MarketingSessionService {
     private final MarketingSessionMessageRepository messageRepository;
     private final UserRepository userRepository;
     private final DiagnosticRepository diagnosticRepository;
+    private final MarketingStateCorrectionRepository correctionRepository;
+    private final MarketingKpiMeasurementRepository kpiMeasurementRepository;
+    private final MarketingActionItemRepository actionItemRepository;
+    private final MarketingStageEvaluator stageEvaluator;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -79,6 +90,9 @@ public class MarketingSessionServiceImpl implements MarketingSessionService {
     @Transactional
     public void deleteSession(String sessionId, String email) {
         MarketingSession session = findOwnedSession(sessionId, email);
+        correctionRepository.deleteBySessionId(sessionId);
+        kpiMeasurementRepository.deleteBySessionId(sessionId);
+        actionItemRepository.deleteBySessionId(sessionId);
         messageRepository.deleteBySessionId(sessionId);
         sessionRepository.delete(session);
         log.info("Marketing session deleted sessionId={} userId={}", sessionId, session.getUser().getId());
@@ -123,6 +137,14 @@ public class MarketingSessionServiceImpl implements MarketingSessionService {
     @Transactional
     public void appendMessage(String sessionId, String email, MarketingSessionMessage.Role role,
                               String content, String ragContextJson, String imageDataUrl, String imageName) {
+        appendMessage(sessionId, email, role, content, ragContextJson, imageDataUrl, imageName, null);
+    }
+
+    @Override
+    @Transactional
+    public void appendMessage(String sessionId, String email, MarketingSessionMessage.Role role,
+                              String content, String ragContextJson, String imageDataUrl, String imageName,
+                              String imageAnnotationsJson) {
         if (content == null || content.isBlank()) {
             throw new IllegalArgumentException("Le contenu du message est obligatoire");
         }
@@ -135,6 +157,7 @@ public class MarketingSessionServiceImpl implements MarketingSessionService {
         message.setRagContextJson(ragContextJson);
         message.setImageDataUrl(imageDataUrl);
         message.setImageName(imageName);
+        message.setImageAnnotationsJson(imageAnnotationsJson);
         messageRepository.save(message);
     }
 
@@ -146,6 +169,21 @@ public class MarketingSessionServiceImpl implements MarketingSessionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<MarketingSessionMessage> getRecentFollowUpMessages(String sessionId, String email, int limit) {
+        MarketingSession session = findOwnedSession(sessionId, email);
+        if (session.getDeliverableGeneratedAt() == null) return List.of();
+        int safeLimit = Math.max(1, Math.min(limit, 50));
+        List<MarketingSessionMessage> newestFirst = messageRepository
+                .findBySessionIdAndCreatedAtGreaterThanEqualOrderByCreatedAtDesc(
+                        sessionId, session.getDeliverableGeneratedAt(),
+                        org.springframework.data.domain.PageRequest.of(0, safeLimit));
+        java.util.ArrayList<MarketingSessionMessage> chronological = new java.util.ArrayList<>(newestFirst);
+        java.util.Collections.reverse(chronological);
+        return List.copyOf(chronological);
+    }
+
+    @Override
     @Transactional
     public void saveDeliverable(String sessionId, String email, String deliverableJson, String deliverableMarkdown) {
         MarketingSession session = findOwnedSession(sessionId, email);
@@ -154,6 +192,8 @@ public class MarketingSessionServiceImpl implements MarketingSessionService {
         }
         session.setDeliverableJson(deliverableJson);
         session.setDeliverableMarkdown(deliverableMarkdown);
+        session.setLastClientActivityAt(java.time.LocalDateTime.now());
+        if (session.getDeliverableGeneratedAt() == null) session.setDeliverableGeneratedAt(java.time.LocalDateTime.now());
         sessionRepository.save(session);
     }
 
@@ -167,11 +207,93 @@ public class MarketingSessionServiceImpl implements MarketingSessionService {
         return session.getDeliverableMarkdown();
     }
 
+    @Override
+    @Transactional
+    public MarketingSessionState correctState(String sessionId, String email, String path, JsonNode value) {
+        MarketingSession session = findOwnedSession(sessionId, email);
+        String normalizedPath = path == null ? "" : path.trim();
+        if (!isEditablePath(normalizedPath)) {
+            throw new IllegalArgumentException("Ce champ de stratégie ne peut pas être modifié manuellement");
+        }
+        try {
+            ObjectNode root = (ObjectNode) objectMapper.readTree(session.getStateJson());
+            String[] parts = normalizedPath.split("\\.");
+            ObjectNode parent = root;
+            for (int index = 0; index < parts.length - 1; index++) {
+                JsonNode child = parent.get(parts[index]);
+                if (!(child instanceof ObjectNode)) child = parent.putObject(parts[index]);
+                parent = (ObjectNode) child;
+            }
+            String field = parts[parts.length - 1];
+            JsonNode oldValue = parent.get(field);
+            parent.set(field, value);
+            MarketingSessionState corrected = objectMapper.treeToValue(root, MarketingSessionState.class);
+            validateStateIdentity(sessionId, corrected);
+            corrected.getInformationTypes().put(normalizedPath, MarketingSessionState.InformationType.DATA);
+            corrected = stageEvaluator.evaluateAfterAnswer(corrected);
+
+            session.setStage(corrected.getStage());
+            session.setCompleted(corrected.isCompleted());
+            session.setStateJson(writeState(corrected));
+            sessionRepository.save(session);
+
+            MarketingStateCorrection audit = new MarketingStateCorrection();
+            audit.setSession(session);
+            audit.setActorEmail(email);
+            audit.setFieldPath(normalizedPath);
+            audit.setOldValueJson(oldValue == null ? "null" : objectMapper.writeValueAsString(oldValue));
+            audit.setNewValueJson(objectMapper.writeValueAsString(value));
+            correctionRepository.save(audit);
+            return corrected;
+        } catch (JsonProcessingException exception) {
+            throw new IllegalArgumentException("Valeur de correction invalide", exception);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MarketingStateCorrectionView> getCorrections(String sessionId, String email) {
+        findOwnedSession(sessionId, email);
+        return correctionRepository.findBySessionIdOrderByCreatedAtDesc(sessionId).stream()
+                .map(item -> new MarketingStateCorrectionView(item.getFieldPath(), readJsonValue(item.getOldValueJson()),
+                        readJsonValue(item.getNewValueJson()), item.getActorEmail(), item.getCreatedAt()))
+                .toList();
+    }
+
+    private Object readJsonValue(String value) {
+        try {
+            return objectMapper.readValue(value, Object.class);
+        } catch (JsonProcessingException exception) {
+            throw new IllegalStateException("Historique de correction invalide", exception);
+        }
+    }
+
+    private JsonNode readJson(String value) {
+        try {
+            return objectMapper.readTree(value);
+        } catch (JsonProcessingException exception) {
+            throw new IllegalStateException("Historique de correction invalide", exception);
+        }
+    }
+
+    private boolean isEditablePath(String path) {
+        return path.matches("company\\.(name|sector|productsOrServices|businessModel|location|size|marketingMaturity|mainCompetitors)")
+                || path.matches("objectives\\.(type|currentValue|targetValue|deadline|smartStatement)")
+                || path.matches("audit\\.(website|currentChannels|currentResults|trackingAvailable|crmAvailable)")
+                || path.matches("targetAudience\\.(segments|primaryPersona)")
+                || path.matches("positioning\\.(valueProposition|differentiators|proofPoints)")
+                || path.equals("recommendedChannels") || path.equals("budget.monthlyAmount")
+                || path.equals("budget.currency") || path.equals("budget.teamResources")
+                || path.equals("budget.weeklyTimeHours") || path.equals("budget.leadHandlingCapacity")
+                || path.equals("weeklyActions") || path.equals("kpis");
+    }
+
     private MarketingSessionState initialState(String sessionId, User user) {
         MarketingSessionState state = new MarketingSessionState();
         state.setSessionId(sessionId);
         state.setServiceId(SERVICE_ID);
         state.setStage(MarketingStrategyStage.COMPANY_DISCOVERY);
+        state.getCompany().setName(user.getEntreprise());
         state.getCompany().setSector(user.getSecteur());
         state.getCompany().setSize(user.getTailleEntreprise());
         state.setMissingInformation(new ArrayList<>(List.of(
