@@ -1,0 +1,86 @@
+{
+  "serviceId": "MARKETING_STRATEGY",
+  "version": "1.0",
+  "scenarios": [
+    {
+      "id": "restaurant-local",
+      "company": { "sector": "Restauration", "businessModel": "B2C", "location": "Casablanca", "size": "TPE" },
+      "objective": "Augmenter les réservations directes pendant les jours creux",
+      "expectedPriorities": ["Google Business Profile", "SEO local", "avis clients"],
+      "expectedKpis": ["réservations qualifiées", "appels", "coût par réservation"],
+      "forbiddenBehaviors": ["publicité nationale sans justification", "inventer le nombre actuel de réservations"]
+    },
+    {
+      "id": "agence-immobiliere",
+      "company": { "sector": "Immobilier", "businessModel": "B2C", "location": "Rabat", "size": "TPE" },
+      "objective": "Obtenir davantage de mandats vendeurs qualifiés",
+      "expectedPriorities": ["recherche locale", "landing page", "preuves de ventes"],
+      "expectedKpis": ["demandes d'estimation qualifiées", "mandats signés"],
+      "forbiddenBehaviors": ["confondre formulaires et mandats", "recommander TikTok sans analyse de cible"]
+    },
+    {
+      "id": "boutique-ecommerce",
+      "company": { "sector": "E-commerce", "businessModel": "B2C", "location": "Maroc", "size": "PME" },
+      "objective": "Augmenter les ventes rentables du catalogue prioritaire",
+      "expectedPriorities": ["tracking e-commerce", "email marketing", "SEO produit"],
+      "expectedKpis": ["taux de conversion", "CAC", "marge", "réachat"],
+      "forbiddenBehaviors": ["augmenter les Ads avant de vérifier le tracking", "utiliser seulement le ROAS"]
+    },
+    {
+      "id": "cabinet-medical",
+      "company": { "sector": "Santé", "businessModel": "B2C", "location": "Marrakech", "size": "TPE" },
+      "objective": "Améliorer la prise de rendez-vous locale",
+      "expectedPriorities": ["Google Business Profile", "contenu pédagogique", "parcours de rendez-vous"],
+      "expectedKpis": ["rendez-vous appropriés", "taux de présence"],
+      "forbiddenBehaviors": ["promesse médicale", "collecte de données sensibles inutile"]
+    },
+    {
+      "id": "salle-de-sport",
+      "company": { "sector": "Fitness", "businessModel": "B2C", "location": "Casablanca", "size": "TPE" },
+      "objective": "Convertir davantage d'essais en abonnements",
+      "expectedPriorities": ["offre d'essai", "Meta Ads", "relance"],
+      "expectedKpis": ["essais réservés", "conversion en abonnement", "rétention"],
+      "forbiddenBehaviors": ["optimiser uniquement les vues", "ignorer la capacité de la salle"]
+    },
+    {
+      "id": "entreprise-b2b",
+      "company": { "sector": "Services professionnels", "businessModel": "B2B", "location": "Maroc", "size": "PME" },
+      "objective": "Générer des rendez-vous avec des décideurs qualifiés",
+      "expectedPriorities": ["LinkedIn", "contenu expert", "prospection ciblée"],
+      "expectedKpis": ["rendez-vous qualifiés", "opportunités", "cycle de vente"],
+      "forbiddenBehaviors": ["privilégier le volume de leads", "cibler tous les professionnels"]
+    },
+    {
+      "id": "hotel",
+      "company": { "sector": "Hôtellerie", "businessModel": "B2C", "location": "Agadir", "size": "PME" },
+      "objective": "Augmenter les réservations directes en basse saison",
+      "expectedPriorities": ["Google Ads", "contenu destination", "email"],
+      "expectedKpis": ["réservations directes", "coût par réservation", "taux d'occupation"],
+      "forbiddenBehaviors": ["remise permanente", "ignorer la marge par canal"]
+    },
+    {
+      "id": "startup-saas",
+      "company": { "sector": "Logiciel SaaS", "businessModel": "B2B", "location": "International", "size": "Startup" },
+      "objective": "Augmenter l'activation des comptes d'essai qualifiés",
+      "expectedPriorities": ["contenu expert", "démonstration", "onboarding"],
+      "expectedKpis": ["activation", "conversion essai-payant", "rétention", "CAC"],
+      "forbiddenBehaviors": ["accélérer l'acquisition avant l'activation", "inventer une rétention de référence"]
+    },
+    {
+      "id": "artisan-local",
+      "company": { "sector": "Artisanat", "businessModel": "B2C", "location": "Fès", "size": "Indépendant" },
+      "objective": "Recevoir davantage de demandes de devis dans la zone desservie",
+      "expectedPriorities": ["Google Business Profile", "avis", "SEO local"],
+      "expectedKpis": ["demandes qualifiées", "devis acceptés"],
+      "forbiddenBehaviors": ["dépasser la capacité de production", "cibler hors zone"]
+    },
+    {
+      "id": "centre-formation",
+      "company": { "sector": "Formation", "businessModel": "B2B", "location": "Casablanca", "size": "PME" },
+      "objective": "Remplir une session de formation destinée aux responsables RH",
+      "expectedPriorities": ["LinkedIn", "email ciblé", "webinaire"],
+      "expectedKpis": ["inscriptions qualifiées", "présence", "conversion"],
+      "forbiddenBehaviors": ["promouvoir toutes les formations ensemble", "confondre inscrits et participants"]
+    }
+  ]
+}

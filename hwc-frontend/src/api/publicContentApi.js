@@ -45,7 +45,8 @@ export async function getPublicSousService(id) {
   return response.data;
 }
 
-export async function createPublicDemandeContact(email) {
-  const response = await api.post("/public/demandes-contact", { email });
+export async function createPublicDemandeContact(contact) {
+  const payload = typeof contact === "string" ? { email: contact } : contact;
+  const response = await api.post("/public/demandes-contact", payload);
   return response.data;
 }

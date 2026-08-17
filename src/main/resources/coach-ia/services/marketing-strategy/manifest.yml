@@ -1,0 +1,55 @@
+service_id: MARKETING_STRATEGY
+name: Développer votre stratégie Marketing Digital
+version: 1.0
+language: fr
+status: development
+
+indexing:
+  include:
+    - ../../global/00_mission_coach_ia.md
+    - ../../global/01_regles_globales_coach.md
+    - knowledge/*.md
+  exclude:
+    - prompts/**
+    - templates/**
+    - schemas/**
+    - tests/**
+  chunking:
+    strategy: markdown_headings
+    max_characters: 2400
+    overlap_characters: 250
+  required_metadata:
+    - document_id
+    - title
+    - service_id
+    - scope
+    - retrieval_tags
+    - version
+
+workflow:
+  initial_stage: COMPANY_DISCOVERY
+  stages:
+    - COMPANY_DISCOVERY
+    - OBJECTIVES
+    - CURRENT_AUDIT
+    - TARGET_AUDIENCE
+    - POSITIONING
+    - CHANNEL_SELECTION
+    - BUDGET_AND_RESOURCES
+    - ACTION_PLAN
+    - KPI_SELECTION
+    - FINAL_DELIVERABLE
+    - COMPLETED
+
+retrieval:
+  mandatory_filter:
+    service_id: MARKETING_STRATEGY
+  global_document_ids:
+    - COACH-MISSION-001
+    - COACH-RULES-001
+  top_k: 5
+
+generation:
+  one_primary_question_at_a_time: true
+  forbid_invented_data: true
+  require_minimum_data_before_finalization: true

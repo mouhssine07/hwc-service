@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +38,11 @@ public class DemandesContactServiceImpl implements DemandesContactService {
     public DemandesContactDTO create(DemandesContactDTO dto) {
         DemandesContact entity = new DemandesContact();
         entity.setEmail(dto.getEmail());
+        entity.setNom(dto.getNom());
+        entity.setTelephone(dto.getTelephone());
+        entity.setServiceDemande(dto.getServiceDemande());
+        entity.setMessage(dto.getMessage());
+        entity.setDateCreation(LocalDateTime.now());
         return toDTO(repository.save(entity));
     }
 
@@ -46,6 +52,14 @@ public class DemandesContactServiceImpl implements DemandesContactService {
     }
 
     private DemandesContactDTO toDTO(DemandesContact entity) {
-        return new DemandesContactDTO(entity.getId(), entity.getEmail());
+        return new DemandesContactDTO(
+                entity.getId(),
+                entity.getEmail(),
+                entity.getNom(),
+                entity.getTelephone(),
+                entity.getServiceDemande(),
+                entity.getMessage(),
+                entity.getDateCreation()
+        );
     }
 }

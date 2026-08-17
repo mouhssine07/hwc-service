@@ -1,7 +1,11 @@
 package hwc_backend;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,6 +32,8 @@ class AuthSecurityIntegrationTests {
 
     private static final String ADMIN_EMAIL = "admin@hwc.com";
     private static final String ADMIN_PASSWORD = "Admin@2026";
+    private static final String CLIENT_EMAIL = "client@hwc.com";
+    private static final String CLIENT_PASSWORD = "Client@2026";
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,6 +53,8 @@ class AuthSecurityIntegrationTests {
     void ensureAdminUser() {
         Role adminRole = roleRepository.findByNom("ROLE_ADMIN")
                 .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_ADMIN")));
+        Role clientRole = roleRepository.findByNom("ROLE_CLIENT")
+                .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_CLIENT")));
 
         User admin = userRepository.findByEmail(ADMIN_EMAIL).orElseGet(User::new);
         admin.setEmail(ADMIN_EMAIL);
@@ -56,6 +64,17 @@ class AuthSecurityIntegrationTests {
         admin.setActif(true);
         admin.setRoles(Set.of(adminRole));
         userRepository.save(admin);
+
+        User client = userRepository.findByEmail(CLIENT_EMAIL).orElseGet(User::new);
+        client.setEmail(CLIENT_EMAIL);
+        client.setPassword(passwordEncoder.encode(CLIENT_PASSWORD));
+        client.setNom("Client");
+        client.setPrenom("HWC");
+        client.setEntreprise("Harmony Works Consulting");
+        client.setSecteur("Conseil");
+        client.setActif(true);
+        client.setRoles(Set.of(clientRole));
+        userRepository.save(client);
     }
 
     @Test
@@ -88,6 +107,9 @@ class AuthSecurityIntegrationTests {
             "/api/admin/sous-service-etapes",
             "/api/admin/sous-service-faqs",
             "/api/admin/accompagnements",
+            "/api/admin/users/clients",
+            "/api/admin/regles-recommandation",
+            "/api/admin/regles-recommandation/categories",
             "/api/admin/dashboard/stats"
     })
     void adminListEndpointsRequireValidToken(String endpoint) throws Exception {
@@ -149,6 +171,213 @@ class AuthSecurityIntegrationTests {
                 .andExpect(status().isCreated());
     }
 
+    @Test
+    void clientAuthEndpointsSupportClientFlowAndProtectClientRoutes() throws Exception {
+        mockMvc.perform(get("/api/client/auth/me"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(get("/api/client/dashboard"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(get("/api/client/rapports"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(get("/api/client/chat/conversations"))
+                .andExpect(status().isUnauthorized());
+
+        String token = loginClientAndGetToken();
+
+        mockMvc.perform(get("/api/client/auth/me")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+
+        String dashboardResponse = mockMvc.perform(get("/api/client/dashboard")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode dashboard = objectMapper.readTree(dashboardResponse);
+        assertTrue(dashboard.has("disponible"));
+        assertTrue(dashboard.has("nombreDiagnostics"));
+
+        String chatResponse = mockMvc.perform(post("/api/client/chat/message")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "message": "Quels sont mes axes prioritaires ?"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode chat = objectMapper.readTree(chatResponse);
+        assertTrue(chat.has("conversationId"));
+        assertEquals("assistant", chat.get("role").asText());
+
+        mockMvc.perform(get("/api/client/chat/conversations/" + chat.get("conversationId").asLong() + "/messages")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void adminCannotUseClientLoginEndpoint() throws Exception {
+        mockMvc.perform(post("/api/client/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "admin@hwc.com",
+                                  "password": "Admin@2026"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void clientCanCompleteDiagnosticAndGetScores() throws Exception {
+        String token = loginClientAndGetToken();
+
+        String questionsResponse = mockMvc.perform(get("/api/client/diagnostics/questions")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode categories = objectMapper.readTree(questionsResponse);
+        assertEquals(5, categories.size());
+
+        String startResponse = mockMvc.perform(post("/api/client/diagnostics/start")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        long diagnosticId = objectMapper.readTree(startResponse).get("diagnosticId").asLong();
+        int answeredQuestions = 0;
+
+        for (JsonNode category : categories) {
+            for (JsonNode question : category.get("questions")) {
+                JsonNode selectedOption = question.get("options").get(question.get("options").size() - 1);
+
+                mockMvc.perform(post("/api/client/diagnostics/" + diagnosticId + "/reponses")
+                                .header("Authorization", "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                          "questionId": %d,
+                                          "optionReponseId": %d
+                                        }
+                                        """.formatted(question.get("id").asLong(), selectedOption.get("id").asLong())))
+                        .andExpect(status().isOk());
+                answeredQuestions++;
+            }
+        }
+
+        assertEquals(25, answeredQuestions);
+
+        String finalizeResponse = mockMvc.perform(post("/api/client/diagnostics/" + diagnosticId + "/finalize")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode result = objectMapper.readTree(finalizeResponse);
+        assertEquals("TERMINE", result.get("statut").asText());
+        assertEquals("EXCELLENT", result.get("niveauMaturite").asText());
+        assertEquals(5, result.get("scores").size());
+        assertTrue(result.get("scoreGlobal").asDouble() >= 99.0);
+
+        String dashboardResponse = mockMvc.perform(get("/api/client/dashboard")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode dashboard = objectMapper.readTree(dashboardResponse);
+        assertTrue(dashboard.get("disponible").asBoolean());
+        assertEquals(diagnosticId, dashboard.get("dernierDiagnosticId").asLong());
+        assertEquals(5, dashboard.get("scoresParCategorie").size());
+        assertTrue(dashboard.get("nombreDiagnostics").asInt() >= 1);
+
+        String coachResponse = mockMvc.perform(get("/api/client/coach/current-week")
+                        .param("diagnosticId", String.valueOf(diagnosticId))
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode coachWeek = objectMapper.readTree(coachResponse);
+        assertTrue(coachWeek.get("disponible").asBoolean());
+        assertEquals(diagnosticId, coachWeek.get("diagnosticId").asLong());
+        assertEquals(3, coachWeek.get("objectifs").size());
+        assertEquals(1, coachWeek.get("numeroSemaine").asInt());
+        assertEquals(12, coachWeek.get("dureeProgrammeSemaines").asInt());
+
+        long objectiveId = coachWeek.get("objectifs").get(0).get("id").asLong();
+        String progressResponse = mockMvc.perform(patch("/api/client/coach/objectifs/" + objectiveId + "/progress")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "quantiteRealisee": 1,
+                                  "commentaire": "Action realisee et verifiee pendant le test"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode updatedCoachWeek = objectMapper.readTree(progressResponse);
+        assertEquals(1, updatedCoachWeek.get("objectifs").get(0).get("quantiteRealisee").asInt());
+        assertTrue(updatedCoachWeek.get("objectifs").get(0).get("termine").asBoolean());
+
+        byte[] pdfResponse = mockMvc.perform(get("/api/client/diagnostics/" + diagnosticId + "/pdf")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsByteArray();
+
+        assertTrue(new String(pdfResponse, 0, 4).startsWith("%PDF"));
+
+        String rapportsResponse = mockMvc.perform(get("/api/client/rapports")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode rapports = objectMapper.readTree(rapportsResponse);
+        assertTrue(rapports.size() >= 1);
+
+        mockMvc.perform(delete("/api/client/diagnostics/" + diagnosticId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void disabledClientTokenIsRejectedOnNextRequest() throws Exception {
+        String token = loginClientAndGetToken();
+
+        User client = userRepository.findByEmail(CLIENT_EMAIL).orElseThrow();
+        client.setActif(false);
+        userRepository.save(client);
+
+        mockMvc.perform(get("/api/client/auth/me")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isUnauthorized());
+    }
+
     private String loginAndGetToken() throws Exception {
         String loginResponse = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,6 +385,24 @@ class AuthSecurityIntegrationTests {
                                 {
                                   "email": "admin@hwc.com",
                                   "password": "Admin@2026"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode json = objectMapper.readTree(loginResponse);
+        return json.get("token").asText();
+    }
+
+    private String loginClientAndGetToken() throws Exception {
+        String loginResponse = mockMvc.perform(post("/api/client/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "client@hwc.com",
+                                  "password": "Client@2026"
                                 }
                                 """))
                 .andExpect(status().isOk())

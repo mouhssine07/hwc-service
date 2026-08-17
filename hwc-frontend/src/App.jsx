@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Header from "./components/Header.jsx";
 import Hero from "./components/Hero.jsx";
@@ -29,9 +29,11 @@ import AccompagnementsPage from "./pages/admin/AccompagnementsPage.jsx";
 import CertificationsPage from "./pages/admin/CertificationsPage.jsx";
 import ChiffresClesPage from "./pages/admin/ChiffresClesPage.jsx";
 import ClientsConfiancePage from "./pages/admin/ClientsConfiancePage.jsx";
+import ClientsPage from "./pages/admin/ClientsPage.jsx";
 import DemandesContactPage from "./pages/admin/DemandesContactPage.jsx";
 import EtiquettesPage from "./pages/admin/EtiquettesPage.jsx";
 import PaysPage from "./pages/admin/PaysPage.jsx";
+import ReglesRecommandationPage from "./pages/admin/ReglesRecommandationPage.jsx";
 import ServiceFonctionnalitesPage from "./pages/admin/ServiceFonctionnalitesPage.jsx";
 import ServiceImagesPage from "./pages/admin/ServiceImagesPage.jsx";
 import ServicesPage from "./pages/admin/ServicesPage.jsx";
@@ -43,6 +45,16 @@ import SousServicesPage from "./pages/admin/SousServicesPage.jsx";
 import TemoignagesPage from "./pages/admin/TemoignagesPage.jsx";
 import DashboardLayout from "./components/admin/layout/DashboardLayout.jsx";
 import ProtectedRoute from "./components/admin/layout/ProtectedRoute.jsx";
+import ClientLoginPage from "./pages/client/ClientLoginPage.jsx";
+import ClientRegisterPage from "./pages/client/ClientRegisterPage.jsx";
+import ClientProtectedRoute from "./pages/client/ClientProtectedRoute.jsx";
+import DiagnosticStartPage from "./pages/client/DiagnosticStartPage.jsx";
+import DiagnosticQuestionsPage from "./pages/client/DiagnosticQuestionsPage.jsx";
+import DiagnosticResultatPage from "./pages/client/DiagnosticResultatPage.jsx";
+import RecommandationsPage from "./pages/client/RecommandationsPage.jsx";
+import DashboardClientPage from "./pages/client/DashboardClientPage.jsx";
+import CoachIAPage from "./pages/client/CoachIAPage.jsx";
+import MarketingStrategyCoachPage from "./pages/client/MarketingStrategyCoachPage.jsx";
 
 function Home() {
   return (
@@ -58,7 +70,10 @@ function Home() {
 
 export default function App() {
   const location = useLocation();
-  const isStandaloneRoute = location.pathname.startsWith("/admin") || location.pathname === "/login";
+  const isStandaloneRoute =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/client") ||
+    location.pathname === "/login";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -87,6 +102,18 @@ export default function App() {
           <Route path="/hwc-method" element={<HwcMethod />} />
           <Route path="/methode-hwc-360" element={<HwcMethod />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/client/login" element={<ClientLoginPage />} />
+          <Route path="/client/register" element={<ClientRegisterPage />} />
+          <Route path="/client" element={<ClientProtectedRoute />}>
+            <Route index element={<Navigate to="/client/diagnostic" replace />} />
+            <Route path="dashboard" element={<DashboardClientPage />} />
+            <Route path="coach" element={<CoachIAPage />} />
+            <Route path="coach/marketing" element={<MarketingStrategyCoachPage />} />
+            <Route path="diagnostic" element={<DiagnosticStartPage />} />
+            <Route path="diagnostic/:diagnosticId/questions" element={<DiagnosticQuestionsPage />} />
+            <Route path="diagnostic/:diagnosticId/resultat" element={<DiagnosticResultatPage />} />
+            <Route path="diagnostic/:diagnosticId/recommandations" element={<RecommandationsPage />} />
+          </Route>
           <Route path="/admin" element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
@@ -98,6 +125,8 @@ export default function App() {
               <Route path="pays" element={<PaysPage />} />
               <Route path="chiffres-cles" element={<ChiffresClesPage />} />
               <Route path="clients-confiance" element={<ClientsConfiancePage />} />
+              <Route path="clients" element={<ClientsPage />} />
+              <Route path="regles-recommandation" element={<ReglesRecommandationPage />} />
               <Route path="demandes-contact" element={<DemandesContactPage />} />
               <Route path="service-fonctionnalites" element={<ServiceFonctionnalitesPage />} />
               <Route path="service-images" element={<ServiceImagesPage />} />

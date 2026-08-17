@@ -51,6 +51,103 @@ h6 {
   font-family: "Playfair Display", Georgia, serif;
 }
 
+.coach-reference-page,
+.coach-reference-page h1,
+.coach-reference-page h2,
+.coach-reference-page h3,
+.coach-reference-page h4,
+.coach-reference-page h5,
+.coach-reference-page h6 {
+  font-family: Outfit, system-ui, sans-serif;
+}
+
+/* Le Coach reste entièrement visible dans la hauteur de l'écran. */
+.coach-reference-page header img {
+  height: clamp(52px, 8vh, 105px);
+  width: clamp(52px, 8vh, 105px);
+}
+
+.coach-reference-page header h1 {
+  font-size: clamp(18px, 3.2vh, 35px);
+}
+
+.coach-reference-page header p {
+  font-size: clamp(11px, 1.5vh, 16px);
+}
+
+.coach-reference-page > div > div > section:first-of-type h2,
+.coach-reference-page > div > div > section:first-of-type h2 + p {
+  font-size: clamp(18px, 3.4vh, 44px);
+}
+
+.coach-reference-page > div > div > section:nth-of-type(2) {
+  margin-top: .6vh;
+  flex-shrink: 0;
+}
+
+.coach-reference-page > div > div > section:nth-of-type(2) > div:last-child {
+  margin-top: .8vh;
+  gap: clamp(6px, 1.2vw, 20px);
+}
+
+.coach-reference-page > div > div > section:nth-of-type(2) article {
+  min-height: 0;
+  height: clamp(128px, 25vh, 315px);
+  padding: clamp(10px, 1.8vh, 28px);
+}
+
+.coach-reference-page > div > div > section:nth-of-type(2) article > div:first-child {
+  min-height: 0;
+}
+
+.coach-reference-page > div > div > section:nth-of-type(2) article > div:last-child {
+  bottom: clamp(8px, 1.8vh, 28px);
+  left: clamp(10px, 1.8vh, 28px);
+  right: clamp(10px, 1.8vh, 28px);
+}
+
+.coach-reference-page footer {
+  margin-top: 1vh;
+  min-height: 0;
+  height: clamp(42px, 7vh, 72px);
+  flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  .coach-reference-page > div > div > section:nth-of-type(2) > div:last-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .coach-reference-page > div > div > section:nth-of-type(2) article {
+    height: clamp(105px, 16vh, 145px);
+  }
+
+  .coach-reference-page > div > div > section:nth-of-type(2) article p,
+  .coach-reference-page > div > div > section:nth-of-type(2) article > div:last-child > div {
+    display: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .coach-reference-page header {
+    grid-template-columns: 52px 1fr 42px;
+  }
+
+  .coach-reference-page > div > div > section:first-of-type {
+    grid-template-columns: 1.15fr .85fr;
+  }
+
+  .coach-reference-page > div > div > section:first-of-type > div:first-child p:last-of-type,
+  .coach-reference-page footer > div {
+    display: none;
+  }
+
+  .coach-reference-page > div > div > section:nth-of-type(2) article h3 {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+}
+
 @layer components {
   .section-container {
     @apply mx-auto w-full max-w-[1400px] px-4 md:px-6 lg:px-8;

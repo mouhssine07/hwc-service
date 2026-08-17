@@ -32,7 +32,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 2. Créer Les APIs Admin - En attente validation manuelle
+## 2. Créer Les APIs Admin - Terminé
 
 - [x] Créer les endpoints admin `/api/admin/services`
 - [x] Créer les endpoints admin `/api/admin/sous-services`
@@ -53,7 +53,7 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 - [x] Ajouter pagination avec `Pageable` sur les listes
 - [x] Ajouter validation `@Valid` sur les créations/modifications
 - [x] Ajouter une gestion globale d'erreurs avec `@ControllerAdvice`
-- [ ] Tester chaque CRUD avec Postman ou Thunder Client
+- [x] Tester chaque CRUD avec Postman ou Thunder Client
 
 ---
 
@@ -207,19 +207,43 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 
 ---
 
-## 11. Validation Finale - En attente validation manuelle
+## 11. Validation Finale - Terminée sauf mot de passe admin
 
 - [x] Tester build frontend avec `npm.cmd run build`
 - [x] Tester backend avec `mvn test`
-- [ ] Tester login admin complet
-- [ ] Tester chaque page CRUD
+- [x] Tester login admin complet
+- [x] Tester chaque page CRUD
 - [x] Tester upload images
-- [ ] Tester responsive dashboard mobile
-- [ ] Tester responsive site vitrine
+- [x] Tester responsive dashboard mobile
+- [x] Tester responsive site vitrine
 - [x] Vérifier que le dashboard n'affiche pas header/footer vitrine
 - [x] Vérifier que les routes publiques restent accessibles
 - [x] Vérifier que les routes admin sont protégées
 - [ ] Changer le mot de passe admin par défaut
+
+---
+
+## 12. Phase 2 - Module 7A Chatbot IA - Terminé
+
+- [x] Créer les entités `ChatConversation` et `ChatMessage`
+- [x] Créer `ChatConversationRepository` et `ChatMessageRepository`
+- [x] Créer les DTOs chat
+- [x] Créer `ChatService` et `ChatServiceImpl`
+- [x] Créer `ChatController`
+- [x] Ajouter les endpoints client `/api/client/chat/message`, `/api/client/chat/conversations`, `/api/client/chat/conversations/{id}/messages`
+- [x] Intégrer Ollama local avec `OLLAMA_BASE_URL` et `OLLAMA_MODEL`
+- [x] Utiliser `llama3.2:latest` comme modèle local par défaut
+- [x] Ajouter contexte client + diagnostic + scores + recommandations
+- [x] Empêcher le mélange entre clients/diagnostics dans le prompt
+- [x] Forcer une réponse structurée moderne et lisible
+- [x] Ajouter mémoire conversationnelle avec historique sauvegardé
+- [x] Recharger la dernière conversation quand la fenêtre chatbot est fermée/réouverte
+- [x] Limiter la mémoire envoyée au LLM avec `CHAT_MEMORY_MAX_MESSAGES`
+- [x] Ajouter nettoyage automatique des conversations anciennes avec `CHAT_RETENTION_DAYS`
+- [x] Ajouter l'interface frontend `ChatbotButton`, `ChatbotWindow`, `ChatMessage`, `ChatInput`, `ChatSuggestions`
+- [x] Intégrer le bouton Assistant IA dans les routes client protégées
+- [x] Tester backend avec `mvn test`
+- [x] Tester frontend avec `npm.cmd run build`
 
 ---
 
@@ -230,3 +254,5 @@ Référence détaillée : `hwc-frontend/PLAN_DASHBOARD_ADMIN.md`
 - [x] Commencer Phase 8 : créer les pages CRUD Frontend
 - [x] Commencer Phase 9 : upload images
 - [x] Commencer Phase 10 : connecter le site vitrine à l'API
+- [x] Commencer et terminer Module 7A : Assistant IA Chatbot avec Ollama local
+- [ ] Commencer Module 7B : Coach IA hebdomadaire

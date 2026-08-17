@@ -97,6 +97,10 @@ public class AuthController {
                 user.getEmail(),
                 user.getNom(),
                 user.getPrenom(),
+                user.getEntreprise(),
+                user.getSecteur(),
+                user.getTailleEntreprise(),
+                user.getTelephone(),
                 user.isActif(),
                 roleNames(user)
         );

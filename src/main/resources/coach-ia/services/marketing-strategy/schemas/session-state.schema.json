@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hwc.ma/schemas/marketing-session-state.schema.json",
+  "title": "MarketingSessionState",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["serviceId", "sessionId", "stage", "company", "objectives", "audit", "targetAudience", "positioning", "budget", "recommendedChannels", "weeklyActions", "kpis", "missingInformation", "confidence", "completed"],
+  "properties": {
+    "serviceId": { "const": "MARKETING_STRATEGY" },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "stage": { "enum": ["COMPANY_DISCOVERY", "OBJECTIVES", "CURRENT_AUDIT", "TARGET_AUDIENCE", "POSITIONING", "CHANNEL_SELECTION", "BUDGET_AND_RESOURCES", "ACTION_PLAN", "KPI_SELECTION", "FINAL_DELIVERABLE", "COMPLETED"] },
+    "company": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sector": { "type": ["string", "null"] },
+        "productsOrServices": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "businessModel": { "type": ["string", "null"] },
+        "location": { "type": ["string", "null"] },
+        "size": { "type": ["string", "null"] },
+        "marketingMaturity": { "type": ["string", "null"] },
+        "mainCompetitors": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "objectives": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": ["string", "null"] },
+        "currentValue": { "type": ["string", "number", "null"] },
+        "targetValue": { "type": ["string", "number", "null"] },
+        "deadline": { "type": ["string", "null"] },
+        "smartStatement": { "type": ["string", "null"] }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "website": { "type": ["string", "boolean", "null"] },
+        "currentChannels": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "currentResults": { "type": "object", "additionalProperties": true },
+        "trackingAvailable": { "type": ["boolean", "null"] },
+        "crmAvailable": { "type": ["boolean", "null"] }
+      }
+    },
+    "targetAudience": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "segments": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "primaryPersona": { "type": ["object", "null"], "additionalProperties": true }
+      }
+    },
+    "positioning": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "valueProposition": { "type": ["string", "null"] },
+        "differentiators": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "proofPoints": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "monthlyAmount": { "type": ["number", "null"], "minimum": 0 },
+        "currency": { "type": ["string", "null"] },
+        "teamResources": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "weeklyTimeHours": { "type": ["number", "null"], "minimum": 0 },
+        "leadHandlingCapacity": { "type": ["string", "null"] }
+      }
+    },
+    "recommendedChannels": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+    "weeklyActions": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+    "kpis": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+    "missingInformation": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "assumptions": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "confidence": { "enum": ["LOW", "MEDIUM", "HIGH"] },
+    "completed": { "type": "boolean" }
+  }
+}
